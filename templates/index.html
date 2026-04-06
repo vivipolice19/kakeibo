@@ -518,9 +518,174 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .household-gate {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(160deg, #eff6ff 0%, #f5f5f5 50%, #fff 100%);
+            padding: 24px;
+        }
+
+        .household-gate-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.12);
+            max-width: 440px;
+            width: 100%;
+            padding: 28px 28px 24px;
+        }
+
+        .household-gate-card h1 {
+            font-size: 1.35em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .household-gate-desc {
+            color: #64748b;
+            font-size: 0.92em;
+            line-height: 1.55;
+            margin-bottom: 20px;
+        }
+
+        .household-gate-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .household-gate-actions .submit-btn {
+            width: 100%;
+            margin: 0;
+        }
+
+        .household-gate-divider {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.8em;
+            margin: 18px 0 14px;
+        }
+
+        .household-gate-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .household-gate-row input {
+            flex: 1;
+            min-width: 0;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .household-gate-row .submit-btn {
+            flex-shrink: 0;
+            margin: 0;
+            padding: 10px 18px;
+        }
+
+        .household-gate-error {
+            color: #dc2626;
+            font-size: 0.85em;
+            margin-top: 12px;
+            min-height: 1.2em;
+        }
+
+        .household-gate-lang {
+            margin-bottom: 18px;
+        }
+
+        .household-gate-lang label {
+            display: block;
+            font-size: 0.8em;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .household-gate-lang select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .household-id-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+        }
+
+        .household-id-box code {
+            display: block;
+            font-size: 0.8em;
+            word-break: break-all;
+            color: #334155;
+            margin: 8px 0;
+            font-family: ui-monospace, monospace;
+        }
+
+        .household-id-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .household-id-actions .btn-secondary {
+            padding: 8px 14px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.88em;
+        }
+
+        .household-id-actions .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        .household-share-link {
+            font-size: 0.82em;
+            word-break: break-all;
+            color: #2563eb;
+        }
     </style>
 </head>
 <body>
+    <div id="householdGate" class="household-gate">
+        <div class="household-gate-card">
+            <div class="household-gate-lang">
+                <label data-i18n="household_gate_lang">表示言語</label>
+                <select id="gateLangSelect" aria-label="Language"></select>
+            </div>
+            <h1 data-i18n="household_gate_title">家計簿を選ぶ</h1>
+            <p class="household-gate-desc" data-i18n="household_gate_desc">同じURLでも、それぞれ別の家計簿データを使えます。新規に始めるか、共有されたコードで参加してください。</p>
+            <div class="household-gate-actions">
+                <button type="button" class="submit-btn" onclick="startNewHousehold()" data-i18n="household_new">新しい家計簿を始める</button>
+            </div>
+            <div class="household-gate-divider" data-i18n="household_join_divider">または</div>
+            <p style="font-size: 0.88em; color: #64748b; margin-bottom: 8px;" data-i18n="household_join_hint">共有された家計簿IDを入力</p>
+            <div class="household-gate-row">
+                <input type="text" id="householdCodeInput" data-i18n="household_code_placeholder" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+                <button type="button" class="submit-btn" onclick="joinWithHouseholdCode()" data-i18n="household_join">接続</button>
+            </div>
+            <div id="householdGateError" class="household-gate-error" role="alert"></div>
+        </div>
+    </div>
+
+    <div id="appShell" style="display:none">
     <div class="header">
         <div class="header-title" data-i18n="app_header">S-system 家計簿</div>
         <div class="header-nav">
@@ -684,6 +849,20 @@
         <div id="settingsPage" class="page">
             <h1 class="page-title" data-i18n="settings_title">設定</h1>
             <div class="section">
+                <div class="section-title" data-i18n="household_info_title" style="margin-bottom: 8px;">この家計簿</div>
+                <p style="color: #666; font-size: 0.9em; margin-bottom: 12px; line-height: 1.5;" data-i18n="household_info_help">このIDを家族や別の端末と共有すると、同じ家計簿を開けます。知っている人だけがアクセスできます。</p>
+                <div class="household-id-box">
+                    <span style="font-size: 0.85em; color: #64748b;" data-i18n="household_id_label">家計簿ID</span>
+                    <code id="householdIdDisplay"></code>
+                    <div class="household-id-actions">
+                        <button type="button" class="btn-secondary" onclick="copyHouseholdId()" data-i18n="household_copy">IDをコピー</button>
+                        <button type="button" class="btn-secondary" onclick="switchHousehold()" data-i18n="household_switch">別の家計簿に切り替え</button>
+                    </div>
+                    <p style="margin-top: 14px; font-size: 0.85em; color: #64748b;" data-i18n="household_link_label">共有用リンク</p>
+                    <a id="householdShareLink" class="household-share-link" href="#" target="_blank" rel="noopener"></a>
+                </div>
+            </div>
+            <div class="section">
                 <form id="settingsForm">
                     <div class="form-group">
                         <label data-i18n="period_start_day_label">家計簿期間の開始日</label>
@@ -694,6 +873,7 @@
                 </form>
             </div>
         </div>
+    </div>
     </div>
 
     <div id="editTransactionModal" class="modal">
@@ -773,7 +953,160 @@
 
     <script>
         const API_BASE = '/api';
-        
+        const HOUSEHOLD_STORAGE_KEY = 'kakeibo_household_id';
+        const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        let householdId = null;
+
+        function apiFetch(url, options = {}) {
+            const opts = { ...options };
+            const h = opts.headers && typeof opts.headers === 'object' && !(opts.headers instanceof Headers)
+                ? { ...opts.headers }
+                : {};
+            if (householdId) h['X-Household-Id'] = householdId;
+            opts.headers = h;
+            return fetch(url, opts);
+        }
+
+        function i18nText(key) {
+            return TRANSLATIONS[currentLanguage]?.[key]
+                || TRANSLATIONS.en?.[key]
+                || TRANSLATIONS.ja?.[key]
+                || key;
+        }
+
+        function setHouseholdGateError(msg) {
+            const el = document.getElementById('householdGateError');
+            if (el) el.textContent = msg || '';
+        }
+
+        function initGateLangSelect() {
+            const sel = document.getElementById('gateLangSelect');
+            if (!sel) return;
+            sel.innerHTML = '';
+            Object.keys(LANGUAGES).forEach(code => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = LANGUAGES[code];
+                sel.appendChild(option);
+            });
+            sel.removeEventListener('change', onGateLangChange);
+            sel.addEventListener('change', onGateLangChange);
+        }
+
+        function onGateLangChange(e) {
+            let next = e.target.value;
+            if (!LANGUAGES[next]) next = 'ja';
+            currentLanguage = next;
+            localStorage.setItem('kakeibo_lang', currentLanguage);
+            translatePage();
+        }
+
+        function showHouseholdGate() {
+            document.getElementById('householdGate').style.display = 'flex';
+            document.getElementById('appShell').style.display = 'none';
+            currentLanguage = localStorage.getItem('kakeibo_lang') || 'ja';
+            if (!TRANSLATIONS[currentLanguage]) currentLanguage = 'ja';
+            const gateSel = document.getElementById('gateLangSelect');
+            if (gateSel) gateSel.value = currentLanguage;
+            translatePage();
+            setHouseholdGateError('');
+        }
+
+        function enterHouseholdApp() {
+            document.getElementById('householdGate').style.display = 'none';
+            document.getElementById('appShell').style.display = 'block';
+            updateHouseholdIdDisplay();
+        }
+
+        function updateHouseholdIdDisplay() {
+            const el = document.getElementById('householdIdDisplay');
+            const linkEl = document.getElementById('householdShareLink');
+            if (!householdId) return;
+            if (el) el.textContent = householdId;
+            if (linkEl) {
+                const shareUrl = `${location.origin}${location.pathname}?h=${encodeURIComponent(householdId)}`;
+                linkEl.href = shareUrl;
+                linkEl.textContent = shareUrl;
+            }
+        }
+
+        async function startNewHousehold() {
+            setHouseholdGateError('');
+            try {
+                const res = await fetch(`${API_BASE}/households`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: '{}'
+                });
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                if (!data.id || !UUID_RE.test(data.id)) throw new Error();
+                householdId = data.id;
+                localStorage.setItem(HOUSEHOLD_STORAGE_KEY, householdId);
+                enterHouseholdApp();
+                await bootstrap();
+            } catch (err) {
+                console.error(err);
+                setHouseholdGateError(i18nText('household_error_create'));
+            }
+        }
+
+        async function joinWithHouseholdCode() {
+            setHouseholdGateError('');
+            const input = document.getElementById('householdCodeInput');
+            const code = (input && input.value || '').trim();
+            if (!UUID_RE.test(code)) {
+                setHouseholdGateError(i18nText('household_error_invalid'));
+                return;
+            }
+            const prev = householdId;
+            householdId = code;
+            try {
+                const res = await apiFetch(`${API_BASE}/settings`);
+                if (!res.ok) {
+                    householdId = prev;
+                    setHouseholdGateError(i18nText('household_error_not_found'));
+                    return;
+                }
+                localStorage.setItem(HOUSEHOLD_STORAGE_KEY, code);
+                enterHouseholdApp();
+                await bootstrap();
+            } catch (err) {
+                console.error(err);
+                householdId = prev;
+                setHouseholdGateError(i18nText('household_error_not_found'));
+            }
+        }
+
+        async function verifyStoredHouseholdAndEnter() {
+            try {
+                const res = await apiFetch(`${API_BASE}/settings`);
+                if (!res.ok) throw new Error();
+                enterHouseholdApp();
+                await bootstrap();
+            } catch (e) {
+                householdId = null;
+                localStorage.removeItem(HOUSEHOLD_STORAGE_KEY);
+                showHouseholdGate();
+            }
+        }
+
+        function copyHouseholdId() {
+            if (!householdId) return;
+            navigator.clipboard.writeText(householdId).then(() => {
+                alert(i18nText('household_copied'));
+            }).catch(() => {
+                alert(householdId);
+            });
+        }
+
+        function switchHousehold() {
+            if (!confirm(i18nText('household_leave_confirm'))) return;
+            householdId = null;
+            localStorage.removeItem(HOUSEHOLD_STORAGE_KEY);
+            showHouseholdGate();
+        }
+
         const ICON_LIST = [
             '💰', '💵', '💴', '💶', '💷', '💳', '💸', '🏦', '💼', '👛',
             '🍱', '🍜', '🍕', '🍔', '🍟', '🍗', '🍖', '🥗', '🍝', '🍲',
@@ -893,7 +1226,26 @@
                 cat_salary: '給料', cat_bonus: 'ボーナス', cat_other_income: 'その他収入',
                 cat_food: '食費', cat_transportation: '交通費', cat_housing: '住居費',
                 cat_utilities: '水道光熱費', cat_communication: '通信費', cat_entertainment: '娯楽費',
-                cat_medical: '医療費', cat_other: 'その他'
+                cat_medical: '医療費', cat_other: 'その他',
+                household_gate_lang: '表示言語',
+                household_gate_title: '家計簿を選ぶ',
+                household_gate_desc: '同じURLでも、それぞれ別の家計簿データを使えます。新規に始めるか、共有されたIDで参加してください。',
+                household_new: '新しい家計簿を始める',
+                household_join_divider: 'または',
+                household_join_hint: '共有された家計簿IDを入力',
+                household_code_placeholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+                household_join: '接続',
+                household_error_invalid: '有効なIDの形式ではありません',
+                household_error_not_found: 'そのIDの家計簿が見つかりません',
+                household_error_create: '家計簿の作成に失敗しました',
+                household_info_title: 'この家計簿',
+                household_info_help: 'このIDを家族や別の端末と共有すると、同じ家計簿を開けます。IDを知っている人だけがアクセスできます。',
+                household_id_label: '家計簿ID',
+                household_copy: 'IDをコピー',
+                household_switch: '別の家計簿に切り替え',
+                household_link_label: '共有用リンク（ブックマークや他の端末で開けます）',
+                household_copied: 'IDをクリップボードにコピーしました',
+                household_leave_confirm: '別の家計簿に切り替えますか？ この端末に保存されている接続情報が消えます。'
             },
             'en': {
                 nav_dashboard: 'Dashboard', nav_transactions: 'Transactions', nav_analytics: 'Analytics',
@@ -934,7 +1286,26 @@
                 cat_salary: 'Salary', cat_bonus: 'Bonus', cat_other_income: 'Other Income',
                 cat_food: 'Food', cat_transportation: 'Transportation', cat_housing: 'Housing',
                 cat_utilities: 'Utilities', cat_communication: 'Communication', cat_entertainment: 'Entertainment',
-                cat_medical: 'Medical', cat_other: 'Other'
+                cat_medical: 'Medical', cat_other: 'Other',
+                household_gate_lang: 'Language',
+                household_gate_title: 'Choose your budget',
+                household_gate_desc: 'Everyone uses the same URL, but each household keeps its own data. Start a new budget or join with a shared ID.',
+                household_new: 'Start a new budget',
+                household_join_divider: 'or',
+                household_join_hint: 'Enter a shared household ID',
+                household_code_placeholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+                household_join: 'Connect',
+                household_error_invalid: 'That does not look like a valid ID',
+                household_error_not_found: 'No budget found for that ID',
+                household_error_create: 'Could not create a new budget',
+                household_info_title: 'This household',
+                household_info_help: 'Share this ID with family or another device to open the same budget. Anyone with the ID can access this data.',
+                household_id_label: 'Household ID',
+                household_copy: 'Copy ID',
+                household_switch: 'Switch to another budget',
+                household_link_label: 'Share link (bookmark or open on another device)',
+                household_copied: 'ID copied to clipboard',
+                household_leave_confirm: 'Switch to another budget? This device will forget the current connection.'
             },
             'zh': {
                 nav_dashboard: '仪表板', nav_transactions: '交易历史', nav_analytics: '统计分析',
@@ -1403,15 +1774,17 @@
         }
 
         function translatePage() {
-            const translations = TRANSLATIONS[currentLanguage] || TRANSLATIONS['ja'];
-            if (translations.doc_title) document.title = translations.doc_title;
+            const pick = (key) => TRANSLATIONS[currentLanguage]?.[key] || TRANSLATIONS.en?.[key] || TRANSLATIONS.ja?.[key];
+            const docTitle = pick('doc_title');
+            if (docTitle) document.title = docTitle;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (!translations[key]) return;
+                const text = pick(key);
+                if (text == null || text === '') return;
                 if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                    el.placeholder = translations[key];
+                    el.placeholder = text;
                 } else {
-                    el.textContent = translations[key];
+                    el.textContent = text;
                 }
             });
         }
@@ -1664,7 +2037,7 @@
             currentCurrency = e.target.value;
             updateCurrencyUnits();
             loadData();
-            await fetch(`${API_BASE}/settings`, {
+            await apiFetch(`${API_BASE}/settings`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ currency: currentCurrency })
@@ -1677,6 +2050,8 @@
             const prevLang = currentLanguage;
             currentLanguage = next;
             e.target.value = currentLanguage;
+            const gateSel = document.getElementById('gateLangSelect');
+            if (gateSel) gateSel.value = currentLanguage;
             applyDocumentLanguage();
             translatePage();
             initYearSelector(true);
@@ -1705,16 +2080,18 @@
             }
 
             try {
-                const res = await fetch(`${API_BASE}/settings`, {
+                const res = await apiFetch(`${API_BASE}/settings`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ language: currentLanguage })
                 });
                 if (!res.ok) throw new Error('save failed');
+                localStorage.setItem('kakeibo_lang', currentLanguage);
             } catch (err) {
                 console.error(err);
                 currentLanguage = prevLang;
                 e.target.value = prevLang;
+                if (gateSel) gateSel.value = prevLang;
                 applyDocumentLanguage();
                 translatePage();
                 initYearSelector(true);
@@ -1739,7 +2116,7 @@
 
         async function loadCategories() {
             try {
-                const response = await fetch(`${API_BASE}/categories`);
+                const response = await apiFetch(`${API_BASE}/categories`);
                 const categories = await response.json();
                 
                 const incomeList = document.getElementById('incomeCategoriesList');
@@ -1774,7 +2151,7 @@
 
         async function loadCategoryOptions(selectId, type) {
             try {
-                const response = await fetch(`${API_BASE}/categories?type=${type}`);
+                const response = await apiFetch(`${API_BASE}/categories?type=${type}`);
                 const categories = await response.json();
                 
                 const select = document.getElementById(selectId);
@@ -1796,7 +2173,7 @@
 
         async function loadSettings() {
             try {
-                const response = await fetch(`${API_BASE}/settings`);
+                const response = await apiFetch(`${API_BASE}/settings`);
                 settings = await response.json();
                 currentCurrency = settings.currency || 'JPY';
                 if (!CURRENCIES[currentCurrency]) currentCurrency = 'JPY';
@@ -1804,6 +2181,7 @@
                 if (!TRANSLATIONS[currentLanguage]) currentLanguage = 'ja';
                 const langSel = document.getElementById('langSelect');
                 if (langSel) langSel.value = currentLanguage;
+                localStorage.setItem('kakeibo_lang', currentLanguage);
             } catch (error) {
                 console.error('Error loading settings:', error);
             }
@@ -1829,8 +2207,8 @@
 
             try {
                 const [transactionsRes, summaryRes] = await Promise.all([
-                    fetch(url),
-                    fetch(summaryUrl)
+                    apiFetch(url),
+                    apiFetch(summaryUrl)
                 ]);
 
                 const transactions = await transactionsRes.json();
@@ -1868,7 +2246,7 @@
 
         async function loadAllTransactions() {
             try {
-                const response = await fetch(`${API_BASE}/transactions`);
+                const response = await apiFetch(`${API_BASE}/transactions`);
                 const transactions = await response.json();
 
                 const listEl = document.getElementById('allTransactionsList');
@@ -1899,8 +2277,8 @@
         async function loadAnalytics() {
             try {
                 const [transactionsRes, summaryRes] = await Promise.all([
-                    fetch(`${API_BASE}/transactions`),
-                    fetch(`${API_BASE}/summary`)
+                    apiFetch(`${API_BASE}/transactions`),
+                    apiFetch(`${API_BASE}/summary`)
                 ]);
 
                 const transactions = await transactionsRes.json();
@@ -1944,7 +2322,7 @@
             };
 
             try {
-                const response = await fetch(`${API_BASE}/transactions`, {
+                const response = await apiFetch(`${API_BASE}/transactions`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
@@ -1995,7 +2373,7 @@
             };
 
             try {
-                const response = await fetch(`${API_BASE}/transactions/${id}`, {
+                const response = await apiFetch(`${API_BASE}/transactions/${id}`, {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
@@ -2018,7 +2396,7 @@
             if (!confirm(TRANSLATIONS[currentLanguage].confirm_delete_transaction)) return;
 
             try {
-                const response = await fetch(`${API_BASE}/transactions/${id}`, {
+                const response = await apiFetch(`${API_BASE}/transactions/${id}`, {
                     method: 'DELETE'
                 });
 
@@ -2088,7 +2466,7 @@
                 const url = id ? `${API_BASE}/categories/${id}` : `${API_BASE}/categories`;
                 const method = id ? 'PUT' : 'POST';
                 
-                const response = await fetch(url, {
+                const response = await apiFetch(url, {
                     method: method,
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
@@ -2112,7 +2490,7 @@
             if (!confirm(TRANSLATIONS[currentLanguage].confirm_delete_category)) return;
 
             try {
-                const response = await fetch(`${API_BASE}/categories/${id}`, {
+                const response = await apiFetch(`${API_BASE}/categories/${id}`, {
                     method: 'DELETE'
                 });
 
@@ -2133,7 +2511,7 @@
             };
 
             try {
-                const response = await fetch(`${API_BASE}/settings`, {
+                const response = await apiFetch(`${API_BASE}/settings`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
@@ -2156,8 +2534,9 @@
         document.getElementById('date').valueAsDate = new Date();
 
         initLanguageSelect();
+        initGateLangSelect();
 
-        (async function bootstrap() {
+        async function bootstrap() {
             await loadSettings();
             applyDocumentLanguage();
             initCurrencySelect();
@@ -2169,10 +2548,29 @@
             if (langSel) langSel.value = currentLanguage;
             updateCurrencyUnits();
             translatePage();
+            updateHouseholdIdDisplay();
             const t = document.getElementById('type').value;
             await loadCategoryOptions('category', t);
             await loadCategoryOptions('editCategory', document.getElementById('editType').value);
             await loadData();
+        }
+
+        (function startHouseholdFlow() {
+            const params = new URLSearchParams(location.search);
+            const qh = params.get('h');
+            if (qh && UUID_RE.test(qh)) {
+                localStorage.setItem(HOUSEHOLD_STORAGE_KEY, qh);
+                params.delete('h');
+                const qs = params.toString();
+                history.replaceState({}, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+            }
+            const stored = localStorage.getItem(HOUSEHOLD_STORAGE_KEY);
+            if (stored && UUID_RE.test(stored)) {
+                householdId = stored;
+                verifyStoredHouseholdAndEnter();
+            } else {
+                showHouseholdGate();
+            }
         })();
     </script>
 </body>
