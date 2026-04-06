@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S-system 家計簿</title>
+    <title>S-system</title>
     <style>
         * {
             margin: 0;
@@ -16,6 +16,10 @@
             background: #f5f5f5;
             color: #333;
         }
+
+        [dir="rtl"] .header { flex-direction: row-reverse; }
+        [dir="rtl"] .header-nav { flex-direction: row-reverse; }
+        [dir="rtl"] .header-right { flex-direction: row-reverse; }
 
         .header {
             background: white;
@@ -518,7 +522,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="header-title">S-system 家計簿</div>
+        <div class="header-title" data-i18n="app_header">S-system 家計簿</div>
         <div class="header-nav">
             <a class="nav-link active" onclick="showPage('dashboard')" data-i18n="nav_dashboard">ダッシュボード</a>
             <a class="nav-link" onclick="showPage('transactions')" data-i18n="nav_transactions">取引履歴</a>
@@ -885,6 +889,7 @@
                 currency_NZD: 'ニュージーランドドル', currency_BRL: 'ブラジルレアル', currency_MXN: 'メキシコペソ', currency_ZAR: '南アフリカランド',
                 currency_AED: 'UAEディルハム', currency_SAR: 'サウジアラビアリヤル', currency_TRY: 'トルコリラ', currency_RUB: 'ロシアルーブル',
                 currency_HKD: '香港ドル', currency_TWD: '台湾ドル',
+                date_range_sep: ' 〜 ', app_header: 'S-system 家計簿', doc_title: 'S-system 家計簿',
                 cat_salary: '給料', cat_bonus: 'ボーナス', cat_other_income: 'その他収入',
                 cat_food: '食費', cat_transportation: '交通費', cat_housing: '住居費',
                 cat_utilities: '水道光熱費', cat_communication: '通信費', cat_entertainment: '娯楽費',
@@ -925,6 +930,7 @@
                 currency_NZD: 'New Zealand Dollar', currency_BRL: 'Brazilian Real', currency_MXN: 'Mexican Peso', currency_ZAR: 'South African Rand',
                 currency_AED: 'UAE Dirham', currency_SAR: 'Saudi Riyal', currency_TRY: 'Turkish Lira', currency_RUB: 'Russian Ruble',
                 currency_HKD: 'Hong Kong Dollar', currency_TWD: 'Taiwan Dollar',
+                date_range_sep: ' – ', app_header: 'S-system Budget', doc_title: 'S-system Budget',
                 cat_salary: 'Salary', cat_bonus: 'Bonus', cat_other_income: 'Other Income',
                 cat_food: 'Food', cat_transportation: 'Transportation', cat_housing: 'Housing',
                 cat_utilities: 'Utilities', cat_communication: 'Communication', cat_entertainment: 'Entertainment',
@@ -965,6 +971,7 @@
                 currency_NZD: '新西兰元', currency_BRL: '巴西雷亚尔', currency_MXN: '墨西哥比索', currency_ZAR: '南非兰特',
                 currency_AED: '阿联酋迪拉姆', currency_SAR: '沙特里亚尔', currency_TRY: '土耳其里拉', currency_RUB: '俄罗斯卢布',
                 currency_HKD: '港币', currency_TWD: '台币',
+                date_range_sep: ' 〜 ', app_header: 'S-system 家庭账簿', doc_title: 'S-system 家庭账簿',
                 cat_salary: '工资', cat_bonus: '奖金', cat_other_income: '其他收入',
                 cat_food: '餐饮', cat_transportation: '交通', cat_housing: '住房',
                 cat_utilities: '水电煤', cat_communication: '通讯', cat_entertainment: '娱乐',
@@ -1005,6 +1012,7 @@
                 currency_NZD: '뉴질랜드 달러', currency_BRL: '브라질 레알', currency_MXN: '멕시코 페소', currency_ZAR: '남아프리카 랜드',
                 currency_AED: 'UAE 디르함', currency_SAR: '사우디 리얄', currency_TRY: '터키 리라', currency_RUB: '러시아 루블',
                 currency_HKD: '홍콩 달러', currency_TWD: '대만 달러',
+                date_range_sep: ' ~ ', app_header: 'S-system 가계부', doc_title: 'S-system 가계부',
                 cat_salary: '급여', cat_bonus: '보너스', cat_other_income: '기타 수입',
                 cat_food: '식비', cat_transportation: '교통비', cat_housing: '주거비',
                 cat_utilities: '공과금', cat_communication: '통신비', cat_entertainment: '오락비',
@@ -1045,6 +1053,7 @@
                 currency_NZD: 'Dolar Selandia Baru', currency_BRL: 'Real Brasil', currency_MXN: 'Peso Meksiko', currency_ZAR: 'Rand Afrika Selatan',
                 currency_AED: 'Dirham UAE', currency_SAR: 'Riyal Saudi', currency_TRY: 'Lira Turki', currency_RUB: 'Rubel Rusia',
                 currency_HKD: 'Dolar Hong Kong', currency_TWD: 'Dolar Taiwan',
+                date_range_sep: ' – ', app_header: 'S-system Buku Kas', doc_title: 'S-system Buku Kas',
                 cat_salary: 'Gaji', cat_bonus: 'Bonus', cat_other_income: 'Pendapatan Lainnya',
                 cat_food: 'Makanan', cat_transportation: 'Transportasi', cat_housing: 'Perumahan',
                 cat_utilities: 'Utilitas', cat_communication: 'Komunikasi', cat_entertainment: 'Hiburan',
@@ -1085,6 +1094,7 @@
                 currency_NZD: 'ดอลลาร์นิวซีแลนด์', currency_BRL: 'เรียลบราซิล', currency_MXN: 'เปโซเม็กซิโก', currency_ZAR: 'แรนด์แอฟริกาใต้',
                 currency_AED: 'เดอแฮมสหรัฐอาหรับเอมิเรตส์', currency_SAR: 'ริยาลซาอุดีอาระเบีย', currency_TRY: 'ลีราตุรกี', currency_RUB: 'รูเบิลรัสเซีย',
                 currency_HKD: 'ดอลลาร์ฮ่องกง', currency_TWD: 'ดอลลาร์ไต้หวัน',
+                date_range_sep: ' – ', app_header: 'S-system สมุดบัญชี', doc_title: 'S-system สมุดบัญชี',
                 cat_salary: 'เงินเดือน', cat_bonus: 'โบนัส', cat_other_income: 'รายได้อื่นๆ',
                 cat_food: 'ค่าอาหาร', cat_transportation: 'ค่าเดินทาง', cat_housing: 'ค่าที่อยู่อาศัย',
                 cat_utilities: 'ค่าสาธารณูปโภค', cat_communication: 'ค่าสื่อสาร', cat_entertainment: 'ค่าบันเทิง',
@@ -1125,6 +1135,7 @@
                 currency_NZD: 'Đô la New Zealand', currency_BRL: 'Real Brazil', currency_MXN: 'Peso Mexico', currency_ZAR: 'Rand Nam Phi',
                 currency_AED: 'Dirham UAE', currency_SAR: 'Riyal Saudi', currency_TRY: 'Lira Thổ Nhĩ Kỳ', currency_RUB: 'Rúp Nga',
                 currency_HKD: 'Đô la Hong Kong', currency_TWD: 'Đô la Đài Loan',
+                date_range_sep: ' – ', app_header: 'S-system Sổ chi tiêu', doc_title: 'S-system Sổ chi tiêu',
                 cat_salary: 'Lương', cat_bonus: 'Tiền thưởng', cat_other_income: 'Thu nhập khác',
                 cat_food: 'Chi phí ăn uống', cat_transportation: 'Chi phí đi lại', cat_housing: 'Chi phí nhà ở',
                 cat_utilities: 'Chi phí tiện ích', cat_communication: 'Chi phí liên lạc', cat_entertainment: 'Chi phí giải trí',
@@ -1165,6 +1176,7 @@
                 currency_NZD: 'Dólar neozelandés', currency_BRL: 'Real brasileño', currency_MXN: 'Peso mexicano', currency_ZAR: 'Rand sudafricano',
                 currency_AED: 'Dirham de EAU', currency_SAR: 'Riyal saudí', currency_TRY: 'Lira turca', currency_RUB: 'Rublo ruso',
                 currency_HKD: 'Dólar de Hong Kong', currency_TWD: 'Dólar taiwanés',
+                date_range_sep: ' – ', app_header: 'S-system Libro de cuentas', doc_title: 'S-system Libro de cuentas',
                 cat_salary: 'Salario', cat_bonus: 'Bonificación', cat_other_income: 'Otros ingresos',
                 cat_food: 'Alimentos', cat_transportation: 'Transporte', cat_housing: 'Vivienda',
                 cat_utilities: 'Servicios públicos', cat_communication: 'Comunicación', cat_entertainment: 'Entretenimiento',
@@ -1205,6 +1217,7 @@
                 currency_NZD: 'Dollar néo-zélandais', currency_BRL: 'Real brésilien', currency_MXN: 'Peso mexicain', currency_ZAR: 'Rand sud-africain',
                 currency_AED: 'Dirham des EAU', currency_SAR: 'Riyal saoudien', currency_TRY: 'Livre turque', currency_RUB: 'Rouble russe',
                 currency_HKD: 'Dollar de Hong Kong', currency_TWD: 'Dollar de Taïwan',
+                date_range_sep: ' – ', app_header: 'S-system Livre de comptes', doc_title: 'S-system Livre de comptes',
                 cat_salary: 'Salaire', cat_bonus: 'Prime', cat_other_income: 'Autres revenus',
                 cat_food: 'Alimentation', cat_transportation: 'Transport', cat_housing: 'Logement',
                 cat_utilities: 'Services publics', cat_communication: 'Communication', cat_entertainment: 'Divertissement',
@@ -1245,6 +1258,7 @@
                 currency_NZD: 'Neuseeland-Dollar', currency_BRL: 'Brasilianischer Real', currency_MXN: 'Mexikanischer Peso', currency_ZAR: 'Südafrikanischer Rand',
                 currency_AED: 'VAE-Dirham', currency_SAR: 'Saudi-Riyal', currency_TRY: 'Türkische Lira', currency_RUB: 'Russischer Rubel',
                 currency_HKD: 'Hongkong-Dollar', currency_TWD: 'Taiwan-Dollar',
+                date_range_sep: ' – ', app_header: 'S-system Haushaltsbuch', doc_title: 'S-system Haushaltsbuch',
                 cat_salary: 'Gehalt', cat_bonus: 'Bonus', cat_other_income: 'Sonstige Einkünfte',
                 cat_food: 'Lebensmittel', cat_transportation: 'Transport', cat_housing: 'Wohnen',
                 cat_utilities: 'Versorgungsleistungen', cat_communication: 'Kommunikation', cat_entertainment: 'Unterhaltung',
@@ -1285,6 +1299,7 @@
                 currency_NZD: 'Dólar neozelandês', currency_BRL: 'Real brasileiro', currency_MXN: 'Peso mexicano', currency_ZAR: 'Rand sul-africano',
                 currency_AED: 'Dirham dos EAU', currency_SAR: 'Riyal saudita', currency_TRY: 'Lira turca', currency_RUB: 'Rublo russo',
                 currency_HKD: 'Dólar de Hong Kong', currency_TWD: 'Dólar taiwanês',
+                date_range_sep: ' – ', app_header: 'S-system Livro de contas', doc_title: 'S-system Livro de contas',
                 cat_salary: 'Salário', cat_bonus: 'Bônus', cat_other_income: 'Outras receitas',
                 cat_food: 'Alimentação', cat_transportation: 'Transporte', cat_housing: 'Habitação',
                 cat_utilities: 'Serviços públicos', cat_communication: 'Comunicação', cat_entertainment: 'Entretenimento',
@@ -1325,6 +1340,7 @@
                 currency_NZD: 'دولار نيوزيلندا', currency_BRL: 'الريال البرازيلي', currency_MXN: 'البيزو المكسيكي', currency_ZAR: 'الراند الجنوب أفريقي',
                 currency_AED: 'الدرهم الإماراتي', currency_SAR: 'الريال السعودي', currency_TRY: 'الليرة التركية', currency_RUB: 'الروبل الروسي',
                 currency_HKD: 'دولار هونغ كونغ', currency_TWD: 'دولار تايوان',
+                date_range_sep: ' – ', app_header: 'S-system دفتر الحسابات', doc_title: 'S-system دفتر الحسابات',
                 cat_salary: 'الراتب', cat_bonus: 'المكافأة', cat_other_income: 'دخل آخر',
                 cat_food: 'الطعام', cat_transportation: 'المواصلات', cat_housing: 'السكن',
                 cat_utilities: 'المرافق', cat_communication: 'الاتصالات', cat_entertainment: 'الترفيه',
@@ -1335,6 +1351,31 @@
         let currentCurrency = 'JPY';
         let currentLanguage = 'ja';
         let settings = { period_start_day: '1' };
+
+        const LOCALE_MAP = {
+            ja: 'ja-JP', en: 'en-US', zh: 'zh-CN', ko: 'ko-KR', id: 'id-ID', th: 'th-TH', vi: 'vi-VN',
+            es: 'es-ES', fr: 'fr-FR', de: 'de-DE', pt: 'pt-BR', ar: 'ar-SA'
+        };
+
+        function getLocale() {
+            return LOCALE_MAP[currentLanguage] || 'ja-JP';
+        }
+
+        function dateRangeSep() {
+            return (TRANSLATIONS[currentLanguage] || TRANSLATIONS.ja).date_range_sep || ' – ';
+        }
+
+        function applyDocumentLanguage() {
+            const loc = currentLanguage || 'ja';
+            document.documentElement.lang = loc === 'ar' ? 'ar' : loc;
+            document.documentElement.dir = loc === 'ar' ? 'rtl' : 'ltr';
+        }
+
+        function applyCurrencySelectValue() {
+            const sel = document.getElementById('currencySelect');
+            if (!sel || !CURRENCIES[currentCurrency]) return;
+            if ([...sel.options].some(o => o.value === currentCurrency)) sel.value = currentCurrency;
+        }
 
         function initCurrencySelect() {
             const select = document.getElementById('currencySelect');
@@ -1347,6 +1388,7 @@
                 option.textContent = `${CURRENCIES[code].symbol} ${currencyName} (${code})`;
                 select.appendChild(option);
             });
+            applyCurrencySelectValue();
         }
 
         function initLanguageSelect() {
@@ -1362,14 +1404,14 @@
 
         function translatePage() {
             const translations = TRANSLATIONS[currentLanguage] || TRANSLATIONS['ja'];
+            if (translations.doc_title) document.title = translations.doc_title;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (translations[key]) {
-                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                        el.placeholder = translations[key];
-                    } else {
-                        el.textContent = translations[key];
-                    }
+                if (!translations[key]) return;
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.placeholder = translations[key];
+                } else {
+                    el.textContent = translations[key];
                 }
             });
         }
@@ -1392,8 +1434,17 @@
         }
 
         function formatCurrency(amount) {
-            const symbol = CURRENCIES[currentCurrency]?.symbol || '¥';
-            return symbol + amount.toLocaleString();
+            const n = Number(amount);
+            try {
+                return new Intl.NumberFormat(getLocale(), {
+                    style: 'currency',
+                    currency: currentCurrency,
+                    maximumFractionDigits: 0
+                }).format(n);
+            } catch (e) {
+                const symbol = CURRENCIES[currentCurrency]?.symbol || '';
+                return symbol + n.toLocaleString(getLocale(), { maximumFractionDigits: 0 });
+            }
         }
 
         function updateCurrencyUnits() {
@@ -1408,10 +1459,14 @@
         }
 
         function formatDate(date) {
-            const y = date.getFullYear();
-            const m = (date.getMonth() + 1);
-            const d = date.getDate();
-            return `${y}年${m}月${d}日`;
+            try {
+                return new Intl.DateTimeFormat(getLocale(), { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+            } catch (e) {
+                const y = date.getFullYear();
+                const m = date.getMonth() + 1;
+                const d = date.getDate();
+                return `${y}-${m}-${d}`;
+            }
         }
 
         function showPage(pageName) {
@@ -1470,7 +1525,7 @@
                     endDate = new Date(nextYear, nextMonth - 1, getDaysInMonth(nextYear, nextMonth - 1));
                 }
                 
-                const fullPeriod = `${formatDate(startDate)} 〜 ${formatDate(endDate)}`;
+                const fullPeriod = `${formatDate(startDate)}${dateRangeSep()}${formatDate(endDate)}`;
                 
                 document.getElementById('currentPeriod').textContent = fullPeriod;
                 document.getElementById('currentPeriod2').textContent = fullPeriod;
@@ -1496,13 +1551,14 @@
                     prevEndDate = new Date(prevNextYear, prevNextMonth - 1, getDaysInMonth(prevNextYear, prevNextMonth - 1));
                 }
                 
-                const prevPeriod = `${formatDate(prevStartDate)} 〜 ${formatDate(prevEndDate)}`;
+                const prevPeriod = `${formatDate(prevStartDate)}${dateRangeSep()}${formatDate(prevEndDate)}`;
                 document.getElementById('previousPeriod').textContent = prevPeriod;
                 document.getElementById('infoPrevious').textContent = prevPeriod;
                 
                 const today = new Date();
                 const daysLeft = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
-                document.getElementById('daysLeft').textContent = daysLeft > 0 ? `${daysLeft}${TRANSLATIONS[currentLanguage].days_suffix}` : TRANSLATIONS[currentLanguage].period_ended;
+                const trP = TRANSLATIONS[currentLanguage] || TRANSLATIONS.ja;
+                document.getElementById('daysLeft').textContent = daysLeft > 0 ? `${daysLeft}${trP.days_suffix}` : trP.period_ended;
             } else if (year) {
                 const selectedYear = parseInt(year);
                 const daysInJan = getDaysInMonth(selectedYear, 1);
@@ -1520,7 +1576,7 @@
                     endDate = new Date(selectedYear, 11, 31);
                 }
                 
-                const fullPeriod = `${formatDate(startDate)} 〜 ${formatDate(endDate)}`;
+                const fullPeriod = `${formatDate(startDate)}${dateRangeSep()}${formatDate(endDate)}`;
                 document.getElementById('currentPeriod').textContent = fullPeriod;
                 document.getElementById('currentPeriod2').textContent = fullPeriod;
                 document.getElementById('currentPeriod3').textContent = fullPeriod;
@@ -1529,49 +1585,67 @@
                 const prevStartDate = new Date(selectedYear - 1, 0, actualStartDay);
                 const prevEndDate = new Date(selectedYear, 0, actualEndDay > 0 ? actualEndDay : 31);
                 
-                const prevPeriod = `${formatDate(prevStartDate)} 〜 ${formatDate(prevEndDate)}`;
+                const prevPeriod = `${formatDate(prevStartDate)}${dateRangeSep()}${formatDate(prevEndDate)}`;
                 document.getElementById('previousPeriod').textContent = prevPeriod;
                 document.getElementById('infoPrevious').textContent = prevPeriod;
-                document.getElementById('daysLeft').textContent = TRANSLATIONS[currentLanguage].yearly_view;
+                const trY = TRANSLATIONS[currentLanguage] || TRANSLATIONS.ja;
+                document.getElementById('daysLeft').textContent = trY.yearly_view;
             } else {
-                document.getElementById('currentPeriod').textContent = TRANSLATIONS[currentLanguage].all_period;
-                document.getElementById('currentPeriod2').textContent = TRANSLATIONS[currentLanguage].all_period;
-                document.getElementById('currentPeriod3').textContent = TRANSLATIONS[currentLanguage].all_period;
-                document.getElementById('infoCurrent').textContent = TRANSLATIONS[currentLanguage].all_period;
+                const trA = TRANSLATIONS[currentLanguage] || TRANSLATIONS.ja;
+                document.getElementById('currentPeriod').textContent = trA.all_period;
+                document.getElementById('currentPeriod2').textContent = trA.all_period;
+                document.getElementById('currentPeriod3').textContent = trA.all_period;
+                document.getElementById('infoCurrent').textContent = trA.all_period;
                 document.getElementById('previousPeriod').textContent = '-';
                 document.getElementById('infoPrevious').textContent = '-';
                 document.getElementById('daysLeft').textContent = '-';
             }
         }
 
-        function initYearSelector() {
+        function initYearSelector(preserve) {
             const yearSelect = document.getElementById('yearSelect');
+            const prevYear = preserve ? yearSelect.value : null;
             const currentYear = new Date().getFullYear();
-            const yearSuffix = TRANSLATIONS[currentLanguage]?.year_suffix || '';
-            
-            yearSelect.innerHTML = `<option value="">${TRANSLATIONS[currentLanguage].all_period}</option>`;
+            const tr = TRANSLATIONS[currentLanguage] || TRANSLATIONS.ja;
+            const yearSuffix = tr.year_suffix || '';
+            yearSelect.innerHTML = `<option value="">${tr.all_period}</option>`;
             for (let year = currentYear; year >= currentYear - 5; year--) {
                 const option = document.createElement('option');
                 option.value = year;
                 option.textContent = year + yearSuffix;
                 yearSelect.appendChild(option);
             }
-            
-            yearSelect.value = currentYear;
-            const currentMonth = new Date().getMonth() + 1;
-            document.getElementById('monthSelect').value = currentMonth;
+            if (preserve && prevYear !== null && (prevYear === '' || [...yearSelect.options].some(o => o.value === String(prevYear)))) {
+                yearSelect.value = prevYear === '' ? '' : String(prevYear);
+            } else {
+                yearSelect.value = String(currentYear);
+            }
         }
 
-        function initMonthSelector() {
+        function initMonthSelector(preserve) {
             const monthSelect = document.getElementById('monthSelect');
-            const monthSuffix = TRANSLATIONS[currentLanguage]?.month_suffix || '';
-            monthSelect.innerHTML = `<option value="">${TRANSLATIONS[currentLanguage].all_period}</option>`;
+            const prevMonth = preserve ? monthSelect.value : null;
+            const tr = TRANSLATIONS[currentLanguage] || TRANSLATIONS.ja;
+            const monthSuffix = tr.month_suffix || '';
+            monthSelect.innerHTML = `<option value="">${tr.all_period}</option>`;
             for (let i = 1; i <= 12; i++) {
                 const option = document.createElement('option');
                 option.value = i;
                 option.textContent = i + monthSuffix;
                 monthSelect.appendChild(option);
             }
+            const curMonth = String(new Date().getMonth() + 1);
+            if (preserve && prevMonth !== null && (prevMonth === '' || [...monthSelect.options].some(o => o.value === String(prevMonth)))) {
+                monthSelect.value = prevMonth === '' ? '' : String(prevMonth);
+            } else {
+                monthSelect.value = curMonth;
+            }
+        }
+
+        function syncPeriodStartDaySelect() {
+            const v = String(settings.period_start_day || '1');
+            const sel = document.getElementById('periodStartDay');
+            if (sel && [...sel.options].some(o => o.value === v)) sel.value = v;
         }
 
         function initPeriodStartDaySelector() {
@@ -1598,13 +1672,25 @@
         });
 
         document.getElementById('langSelect').addEventListener('change', async (e) => {
-            currentLanguage = e.target.value;
+            let next = e.target.value;
+            if (!LANGUAGES[next]) next = 'ja';
+            const prevLang = currentLanguage;
+            currentLanguage = next;
+            e.target.value = currentLanguage;
+            applyDocumentLanguage();
             translatePage();
-            initYearSelector();
-            initMonthSelector();
+            initYearSelector(true);
+            initMonthSelector(true);
             initCurrencySelect();
             initPeriodStartDaySelector();
-            
+            syncPeriodStartDaySelect();
+            updateCurrencyUnits();
+
+            const typeEl = document.getElementById('type');
+            const editTypeEl = document.getElementById('editType');
+            loadCategoryOptions('category', typeEl ? typeEl.value : 'expense');
+            loadCategoryOptions('editCategory', editTypeEl ? editTypeEl.value : 'expense');
+
             const activePage = document.querySelector('.page.active');
             if (activePage) {
                 if (activePage.id === 'dashboardPage') {
@@ -1617,12 +1703,35 @@
                     loadAnalytics();
                 }
             }
-            
-            await fetch(`${API_BASE}/settings`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ language: currentLanguage })
-            });
+
+            try {
+                const res = await fetch(`${API_BASE}/settings`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ language: currentLanguage })
+                });
+                if (!res.ok) throw new Error('save failed');
+            } catch (err) {
+                console.error(err);
+                currentLanguage = prevLang;
+                e.target.value = prevLang;
+                applyDocumentLanguage();
+                translatePage();
+                initYearSelector(true);
+                initMonthSelector(true);
+                initCurrencySelect();
+                initPeriodStartDaySelector();
+                syncPeriodStartDaySelect();
+                updateCurrencyUnits();
+                loadCategoryOptions('category', typeEl ? typeEl.value : 'expense');
+                loadCategoryOptions('editCategory', editTypeEl ? editTypeEl.value : 'expense');
+                if (activePage) {
+                    if (activePage.id === 'dashboardPage') loadData();
+                    else if (activePage.id === 'transactionsPage') loadAllTransactions();
+                    else if (activePage.id === 'categoriesPage') loadCategories();
+                    else if (activePage.id === 'analyticsPage') loadAnalytics();
+                }
+            }
         });
 
         document.getElementById('yearSelect').addEventListener('change', loadData);
@@ -1689,16 +1798,12 @@
             try {
                 const response = await fetch(`${API_BASE}/settings`);
                 settings = await response.json();
-                
                 currentCurrency = settings.currency || 'JPY';
+                if (!CURRENCIES[currentCurrency]) currentCurrency = 'JPY';
                 currentLanguage = settings.language || 'ja';
-                
-                document.getElementById('currencySelect').value = currentCurrency;
-                document.getElementById('langSelect').value = currentLanguage;
-                document.getElementById('periodStartDay').value = settings.period_start_day || '1';
-                
-                updateCurrencyUnits();
-                translatePage();
+                if (!TRANSLATIONS[currentLanguage]) currentLanguage = 'ja';
+                const langSel = document.getElementById('langSelect');
+                if (langSel) langSel.value = currentLanguage;
             } catch (error) {
                 console.error('Error loading settings:', error);
             }
@@ -1808,7 +1913,8 @@
 
                 const breakdownEl = document.getElementById('categoryBreakdown');
                 if (summary.categories.length === 0) {
-                    breakdownEl.innerHTML = `<div class="empty-state">${TRANSLATIONS[currentLanguage].no_data}</div>`;
+                    const trN = TRANSLATIONS[currentLanguage] || TRANSLATIONS.ja;
+                    breakdownEl.innerHTML = `<div class="empty-state">${trN.no_data}</div>`;
                 } else {
                     breakdownEl.innerHTML = summary.categories.map(c => `
                         <div class="transaction-item">
@@ -2048,17 +2154,26 @@
         });
 
         document.getElementById('date').valueAsDate = new Date();
-        
-        initCurrencySelect();
+
         initLanguageSelect();
-        initYearSelector();
-        initMonthSelector();
-        initPeriodStartDaySelector();
-        loadSettings().then(() => {
-            loadCategoryOptions('category', 'expense');
-            loadCategoryOptions('editCategory', 'expense');
-            loadData();
-        });
+
+        (async function bootstrap() {
+            await loadSettings();
+            applyDocumentLanguage();
+            initCurrencySelect();
+            initYearSelector(false);
+            initMonthSelector(false);
+            initPeriodStartDaySelector();
+            syncPeriodStartDaySelect();
+            const langSel = document.getElementById('langSelect');
+            if (langSel) langSel.value = currentLanguage;
+            updateCurrencyUnits();
+            translatePage();
+            const t = document.getElementById('type').value;
+            await loadCategoryOptions('category', t);
+            await loadCategoryOptions('editCategory', document.getElementById('editType').value);
+            await loadData();
+        })();
     </script>
 </body>
 </html>
