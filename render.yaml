@@ -1,0 +1,11 @@
+# Render Blueprint: New → Blueprint でリポジトリを選ぶと利用できます。
+services:
+  - type: web
+    name: s-system-kakeibo
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"

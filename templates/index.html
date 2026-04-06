@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-system 家計簿</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #3b82f6;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .lang-select, .currency-select {
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .period-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .period-selector label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .period-selector select {
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .summary-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .summary-value.income {
+            color: #22c55e;
+        }
+
+        .summary-value.expense {
+            color: #ef4444;
+        }
+
+        .summary-period {
+            font-size: 0.75em;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .period-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .period-info-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1e40af;
+        }
+
+        .period-info p {
+            font-size: 0.9em;
+            margin: 3px 0;
+            color: #1e40af;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .input-with-unit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-with-unit input {
+            flex: 1;
+        }
+
+        .currency-unit {
+            font-weight: 600;
+            color: #666;
+            min-width: 50px;
+        }
+
+        .submit-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .transaction-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-category {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .transaction-date {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-right: 10px;
+        }
+
+        .transaction-amount.income {
+            color: #22c55e;
+        }
+
+        .transaction-amount.expense {
+            color: #ef4444;
+        }
+
+        .transaction-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-edit {
+            background: #f0f0f0;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .btn-edit:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-delete {
+            background: #fee;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            color: #c00;
+        }
+
+        .btn-delete:hover {
+            background: #fcc;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .category-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+        .category-name {
+            font-weight: 500;
+        }
+
+        .category-icon {
+            margin-right: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .icon-picker-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+        }
+
+        .icon-picker-btn:hover {
+            background: #f5f5f5;
+            border-color: #3b82f6;
+        }
+
+        #selectedIconDisplay {
+            font-size: 1.5em;
+        }
+
+        .icon-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            padding: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .icon-option {
+            font-size: 2em;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .icon-option:hover {
+            background: #f0f0f0;
+            transform: scale(1.1);
+        }
+
+        .icon-option.selected {
+            background: #e3f2fd;
+            border-color: #3b82f6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header-nav {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">S-system 家計簿</div>
+        <div class="header-nav">
+            <a class="nav-link active" onclick="showPage('dashboard')" data-i18n="nav_dashboard">ダッシュボード</a>
+            <a class="nav-link" onclick="showPage('transactions')" data-i18n="nav_transactions">取引履歴</a>
+            <a class="nav-link" onclick="showPage('analytics')" data-i18n="nav_analytics">統計・分析</a>
+            <a class="nav-link" onclick="showPage('categories')" data-i18n="nav_categories">カテゴリ編集</a>
+            <a class="nav-link" onclick="showPage('settings')" data-i18n="nav_settings">設定</a>
+        </div>
+        <div class="header-right">
+            <select class="currency-select" id="currencySelect"></select>
+            <select class="lang-select" id="langSelect"></select>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="dashboardPage" class="page active">
+            <h1 class="page-title" data-i18n="title">家計簿</h1>
+
+            <div class="section">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title" data-i18n="summary_title">今月の概要</div>
+                        <p style="color: #999; font-size: 0.85em; margin-top: 5px;" data-i18n="filter_help">表示する期間を選択してください</p>
+                    </div>
+                    <div class="period-selector">
+                        <label data-i18n="year">年:</label>
+                        <select id="yearSelect"></select>
+                        <label data-i18n="month">月:</label>
+                        <select id="monthSelect"></select>
+                    </div>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label" data-i18n="current_income">今期収入</div>
+                        <div class="summary-value income" id="currentIncome">0</div>
+                        <div class="summary-period" id="currentPeriod"></div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label" data-i18n="current_expense">今期支出</div>
+                        <div class="summary-value expense" id="currentExpense">0</div>
+                        <div class="summary-period" id="currentPeriod2"></div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label" data-i18n="current_balance">今期収支</div>
+                        <div class="summary-value" id="currentBalance">0</div>
+                        <div class="summary-period" id="currentPeriod3"></div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label" data-i18n="previous_balance">前期収支</div>
+                        <div class="summary-value" id="previousBalance">0</div>
+                        <div class="summary-period" id="previousPeriod"></div>
+                    </div>
+                </div>
+
+                <div class="period-info">
+                    <div class="period-info-title" data-i18n="period_info">家計簿期間情報</div>
+                    <p><span data-i18n="current_period">現在の期間:</span> <span id="infoCurrent"></span></p>
+                    <p><span data-i18n="previous_period">前回の期間:</span> <span id="infoPrevious"></span></p>
+                    <p><span data-i18n="days_left">期間終了まで:</span> <span id="daysLeft"></span></p>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="section">
+                    <div class="section-title" style="margin-bottom: 20px;" data-i18n="quick_record">クイック記録</div>
+                    <form id="transactionForm">
+                        <div class="form-group">
+                            <label data-i18n="type">タイプ *</label>
+                            <select id="type" required>
+                                <option value="income" data-i18n="income">💰 収入</option>
+                                <option value="expense" data-i18n="expense">支出</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="amount">金額 *</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="amount" required min="0">
+                                <span class="currency-unit" id="amountUnit">¥</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="category">カテゴリ *</label>
+                            <select id="category" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="memo">メモ</label>
+                            <input type="text" id="description">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="date">日付</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <button type="submit" class="submit-btn" data-i18n="submit">記録する</button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <div class="transactions-header">
+                        <div class="section-title"><span data-i18n="recent_transactions">最近の取引</span> (<span id="transactionCount">0</span>)</div>
+                    </div>
+                    <div id="transactionList">
+                        <div class="empty-state" data-i18n="no_transactions">まだ取引がありません</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="transactionsPage" class="page">
+            <h1 class="page-title" data-i18n="all_transactions">取引履歴</h1>
+            <div class="section">
+                <div id="allTransactionsList"></div>
+            </div>
+        </div>
+
+        <div id="analyticsPage" class="page">
+            <h1 class="page-title" data-i18n="analytics_title">統計・分析</h1>
+            <div class="section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="total_income">総収入</div>
+                        <div class="stat-value income" id="statsIncome">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="total_expense">総支出</div>
+                        <div class="stat-value expense" id="statsExpense">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="net_balance">純収支</div>
+                        <div class="stat-value" id="statsBalance">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="transaction_count">取引数</div>
+                        <div class="stat-value" id="statsCount">0</div>
+                    </div>
+                </div>
+                <div class="section-title" style="margin: 20px 0 10px;" data-i18n="category_breakdown">カテゴリ別支出</div>
+                <div id="categoryBreakdown"></div>
+            </div>
+        </div>
+
+        <div id="categoriesPage" class="page">
+            <h1 class="page-title" data-i18n="category_management">カテゴリ編集</h1>
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title" data-i18n="income_categories">収入カテゴリ</div>
+                    <button class="btn-success" onclick="openCategoryModal('income')" data-i18n="add_category">+ カテゴリ追加</button>
+                </div>
+                <div id="incomeCategoriesList" class="category-list"></div>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title" data-i18n="expense_categories">支出カテゴリ</div>
+                    <button class="btn-success" onclick="openCategoryModal('expense')" data-i18n="add_category">+ カテゴリ追加</button>
+                </div>
+                <div id="expenseCategoriesList" class="category-list"></div>
+            </div>
+        </div>
+
+        <div id="settingsPage" class="page">
+            <h1 class="page-title" data-i18n="settings_title">設定</h1>
+            <div class="section">
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label data-i18n="period_start_day_label">家計簿期間の開始日</label>
+                        <p style="color: #666; font-size: 0.9em; margin: 5px 0 10px;" data-i18n="period_start_day_help">毎月この日から新しい期間が始まります</p>
+                        <select id="periodStartDay"></select>
+                    </div>
+                    <button type="submit" class="submit-btn" data-i18n="save_settings">設定を保存</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTransactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" data-i18n="edit_transaction">取引を編集</div>
+                <span class="close-btn" onclick="closeEditModal()">&times;</span>
+            </div>
+            <form id="editTransactionForm">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label data-i18n="type">タイプ *</label>
+                    <select id="editType" required>
+                        <option value="income" data-i18n="income">💰 収入</option>
+                        <option value="expense" data-i18n="expense">支出</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="amount">金額 *</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="editAmount" required min="0">
+                        <span class="currency-unit" id="editAmountUnit">¥</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="category">カテゴリ *</label>
+                    <select id="editCategory" required></select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="memo">メモ</label>
+                    <input type="text" id="editDescription">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="date">日付</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                <button type="submit" class="submit-btn" data-i18n="save_changes">変更を保存</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="categoryModalTitle" data-i18n="add_category">カテゴリ追加</div>
+                <span class="close-btn" onclick="closeCategoryModal()">&times;</span>
+            </div>
+            <form id="categoryForm">
+                <input type="hidden" id="categoryId">
+                <input type="hidden" id="categoryType">
+                <div class="form-group">
+                    <label data-i18n="category_name">カテゴリ名 *</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="icon">アイコン</label>
+                    <input type="hidden" id="categoryIcon" value="📦">
+                    <button type="button" class="icon-picker-btn" id="iconPickerBtn" onclick="openIconPicker()">
+                        <span id="selectedIconDisplay">📦</span>
+                        <span data-i18n="select_icon">アイコンを選択</span>
+                    </button>
+                </div>
+                <button type="submit" class="submit-btn" data-i18n="save">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="iconPickerModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title" data-i18n="select_icon">アイコンを選択</div>
+                <span class="close-btn" onclick="closeIconPicker()">&times;</span>
+            </div>
+            <div class="icon-picker-grid" id="iconPickerGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        
+        const ICON_LIST = [
+            '💰', '💵', '💴', '💶', '💷', '💳', '💸', '🏦', '💼', '👛',
+            '🍱', '🍜', '🍕', '🍔', '🍟', '🍗', '🍖', '🥗', '🍝', '🍲',
+            '☕', '🍵', '🥤', '🍺', '🍻', '🍷', '🥂', '🍹', '🧃', '🧋',
+            '🚗', '🚕', '🚙', '🚌', '🚎', '🚐', '🚑', '🚒', '🚓', '🚔',
+            '🚖', '🚘', '🚚', '🚛', '🚜', '🏍️', '🛵', '🚲', '🚇', '🚊',
+            '🚞', '🚝', '🚄', '🚅', '✈️', '🛫', '🛬', '🚁', '🚀', '🛸',
+            '⛽', '🅿️', '🚥', '🚦', '🚧', '🚏', '🗺️', '🗿', '🗾', '🗼',
+            '🏠', '🏡', '🏢', '🏣', '🏤', '🏥', '🏦', '🏨', '🏩', '🏪',
+            '🏫', '🏬', '🏭', '🏯', '🏰', '💒', '🗼', '🗽', '⛪', '🕌',
+            '🛕', '🕍', '⛩️', '🕋', '⛲', '⛺', '🌁', '🌃', '🏙️', '🌄',
+            '📱', '💻', '⌨️', '🖥️', '🖨️', '🖱️', '📀', '💿', '💾', '💽',
+            '📷', '📸', '📹', '🎥', '📞', '☎️', '📟', '📠', '📡', '📺',
+            '📻', '🎙️', '🎚️', '🎛️', '🧭', '⏰', '⏱️', '⏲️', '⌛', '⏳',
+            '📚', '📖', '📝', '✏️', '✒️', '🖊️', '🖋️', '🖍️', '📔', '📕',
+            '📓', '📗', '📘', '📙', '📰', '🗞️', '📄', '📃', '📋', '📑',
+            '🛒', '🛍️', '🎁', '🎀', '🎈', '🎉', '🎊', '🎂', '🍰', '🧁',
+            '👕', '👔', '👗', '👘', '👚', '👙', '👜', '👝', '👞', '👟',
+            '🥾', '👠', '👡', '👢', '👒', '🎩', '🎓', '👑', '💍', '💎',
+            '⚽', '⚾', '🥎', '🏀', '🏐', '🏈', '🏉', '🎾', '🥏', '🎳',
+            '🏏', '🏑', '🏒', '🥍', '🏓', '🏸', '🥊', '🥋', '⛳', '⛸️',
+            '🎣', '🤿', '🎿', '🛷', '🥌', '🎯', '🎮', '🕹️', '🎰', '🎲',
+            '♠️', '♥️', '♦️', '♣️', '🃏', '🎴', '🀄', '🎭', '🎨', '🖌️',
+            '🎬', '🎤', '🎧', '🎼', '🎹', '🥁', '🎷', '🎺', '🎸', '🎻',
+            '🩺', '💊', '💉', '🌡️', '🩹', '🩼', '🩺', '🔬', '🔭', '📡',
+            '⚡', '🔥', '💧', '❄️', '☀️', '⭐', '🌟', '✨', '🌈', '☁️',
+            '🌙', '🌛', '🌜', '🌚', '🌕', '🌖', '🌗', '🌘', '🌑', '🌒',
+            '🌓', '🌔', '🌍', '🌎', '🌏', '🪐', '💫', '⚡', '☄️', '💥',
+            '📦', '📮', '📪', '📫', '📬', '📭', '📯', '📜', '📃', '📄',
+            '🔑', '🗝️', '🔐', '🔒', '🔓', '🔔', '🔕', '🔖', '🏷️', '🔗',
+            '⛏️', '🔨', '🛠️', '🔧', '🔩', '⚙️', '🧰', '🧲', '🔫', '💣',
+            '🧨', '🔪', '🗡️', '⚔️', '🛡️', '🚬', '⚰️', '⚱️', '🏺', '🔮',
+            '📿', '💈', '⚗️', '🔭', '🔬', '🕳️', '💊', '💉', '🩸', '🩹'
+        ];
+        
+        const CURRENCIES = {
+            'JPY': { symbol: '¥', name: '日本円 (JPY)' },
+            'USD': { symbol: '$', name: '米ドル (USD)' },
+            'EUR': { symbol: '€', name: 'ユーロ (EUR)' },
+            'GBP': { symbol: '£', name: '英ポンド (GBP)' },
+            'CNY': { symbol: '¥', name: '中国元 (CNY)' },
+            'KRW': { symbol: '₩', name: '韓国ウォン (KRW)' },
+            'IDR': { symbol: 'Rp', name: 'インドネシアルピア (IDR)' },
+            'THB': { symbol: '฿', name: 'タイバーツ (THB)' },
+            'VND': { symbol: '₫', name: 'ベトナムドン (VND)' },
+            'PHP': { symbol: '₱', name: 'フィリピンペソ (PHP)' },
+            'MYR': { symbol: 'RM', name: 'マレーシアリンギット (MYR)' },
+            'SGD': { symbol: 'S$', name: 'シンガポールドル (SGD)' },
+            'INR': { symbol: '₹', name: 'インドルピー (INR)' },
+            'AUD': { symbol: 'A$', name: 'オーストラリアドル (AUD)' },
+            'CAD': { symbol: 'C$', name: 'カナダドル (CAD)' },
+            'CHF': { symbol: 'Fr', name: 'スイスフラン (CHF)' },
+            'NZD': { symbol: 'NZ$', name: 'ニュージーランドドル (NZD)' },
+            'BRL': { symbol: 'R$', name: 'ブラジルレアル (BRL)' },
+            'MXN': { symbol: 'Mex$', name: 'メキシコペソ (MXN)' },
+            'ZAR': { symbol: 'R', name: '南アフリカランド (ZAR)' },
+            'AED': { symbol: 'د.إ', name: 'UAEディルハム (AED)' },
+            'SAR': { symbol: '﷼', name: 'サウジアラビアリヤル (SAR)' },
+            'TRY': { symbol: '₺', name: 'トルコリラ (TRY)' },
+            'RUB': { symbol: '₽', name: 'ロシアルーブル (RUB)' },
+            'HKD': { symbol: 'HK$', name: '香港ドル (HKD)' },
+            'TWD': { symbol: 'NT$', name: '台湾ドル (TWD)' }
+        };
+
+        const LANGUAGES = {
+            'ja': '日本語',
+            'en': 'English',
+            'zh': '中文',
+            'ko': '한국어',
+            'id': 'Bahasa Indonesia',
+            'th': 'ไทย',
+            'vi': 'Tiếng Việt',
+            'es': 'Español',
+            'fr': 'Français',
+            'de': 'Deutsch',
+            'pt': 'Português',
+            'ar': 'العربية'
+        };
+
+        const TRANSLATIONS = {
+            'ja': {
+                nav_dashboard: 'ダッシュボード', nav_transactions: '取引履歴', nav_analytics: '統計・分析',
+                nav_categories: 'カテゴリ編集', nav_settings: '設定', title: '家計簿',
+                summary_title: '今月の概要', year: '年', month: '月',
+                current_income: '今期収入', current_expense: '今期支出', current_balance: '今期収支',
+                previous_balance: '前期収支', period_info: '家計簿期間情報',
+                current_period: '現在の期間', previous_period: '前回の期間', days_left: '期間終了まで',
+                quick_record: 'クイック記録', type: 'タイプ', income: '💰 収入', expense: '支出',
+                amount: '金額', category: 'カテゴリ', memo: 'メモ', date: '日付', submit: '記録する',
+                recent_transactions: '最近の取引', no_transactions: 'まだ取引がありません',
+                all_transactions: '取引履歴', analytics_title: '統計・分析',
+                total_income: '総収入', total_expense: '総支出', net_balance: '純収支',
+                transaction_count: '取引数', category_breakdown: 'カテゴリ別支出',
+                category_management: 'カテゴリ編集', income_categories: '収入カテゴリ',
+                expense_categories: '支出カテゴリ', add_category: '+ カテゴリ追加',
+                settings_title: '設定', period_start_day: '期間開始日', save_settings: '設定を保存',
+                edit_transaction: '取引を編集', save_changes: '変更を保存',
+                category_name: 'カテゴリ名', icon: 'アイコン', save: '保存',
+                edit: '編集', delete: '削除',
+                save_failed: '保存に失敗しました', record_failed: '記録に失敗しました',
+                update_failed: '更新に失敗しました', confirm_delete_transaction: 'この記録を削除しますか？',
+                confirm_delete_category: 'このカテゴリを削除しますか？', settings_saved: '設定を保存しました',
+                period_ended: '期間終了', all_period: '全期間', yearly_view: '年間表示',
+                no_data: 'データがありません', days_suffix: '日',
+                select_icon: 'アイコンを選択', edit_category: 'カテゴリを編集',
+                period_start_day_label: '家計簿期間の開始日', period_start_day_help: '毎月この日から新しい期間が始まります',
+                filter_by_period: 'データ表示フィルター', filter_help: '表示する期間を選択してください',
+                year_suffix: '年', month_suffix: '月', day_suffix: '日',
+                currency_JPY: '日本円', currency_USD: '米ドル', currency_EUR: 'ユーロ', currency_GBP: '英ポンド',
+                currency_CNY: '中国元', currency_KRW: '韓国ウォン', currency_IDR: 'インドネシアルピア', currency_THB: 'タイバーツ',
+                currency_VND: 'ベトナムドン', currency_PHP: 'フィリピンペソ', currency_MYR: 'マレーシアリンギット', currency_SGD: 'シンガポールドル',
+                currency_INR: 'インドルピー', currency_AUD: 'オーストラリアドル', currency_CAD: 'カナダドル', currency_CHF: 'スイスフラン',
+                currency_NZD: 'ニュージーランドドル', currency_BRL: 'ブラジルレアル', currency_MXN: 'メキシコペソ', currency_ZAR: '南アフリカランド',
+                currency_AED: 'UAEディルハム', currency_SAR: 'サウジアラビアリヤル', currency_TRY: 'トルコリラ', currency_RUB: 'ロシアルーブル',
+                currency_HKD: '香港ドル', currency_TWD: '台湾ドル',
+                cat_salary: '給料', cat_bonus: 'ボーナス', cat_other_income: 'その他収入',
+                cat_food: '食費', cat_transportation: '交通費', cat_housing: '住居費',
+                cat_utilities: '水道光熱費', cat_communication: '通信費', cat_entertainment: '娯楽費',
+                cat_medical: '医療費', cat_other: 'その他'
+            },
+            'en': {
+                nav_dashboard: 'Dashboard', nav_transactions: 'Transactions', nav_analytics: 'Analytics',
+                nav_categories: 'Category Editor', nav_settings: 'Settings', title: 'Budget',
+                summary_title: 'Monthly Summary', year: 'Year', month: 'Month',
+                current_income: 'Current Income', current_expense: 'Current Expense', current_balance: 'Current Balance',
+                previous_balance: 'Previous Balance', period_info: 'Period Information',
+                current_period: 'Current Period', previous_period: 'Previous Period', days_left: 'Days Left',
+                quick_record: 'Quick Record', type: 'Type', income: '💰 Income', expense: 'Expense',
+                amount: 'Amount', category: 'Category', memo: 'Memo', date: 'Date', submit: 'Submit',
+                recent_transactions: 'Recent Transactions', no_transactions: 'No transactions yet',
+                all_transactions: 'Transaction History', analytics_title: 'Analytics',
+                total_income: 'Total Income', total_expense: 'Total Expense', net_balance: 'Net Balance',
+                transaction_count: 'Transaction Count', category_breakdown: 'Expense by Category',
+                category_management: 'Category Editor', income_categories: 'Income Categories',
+                expense_categories: 'Expense Categories', add_category: '+ Add Category',
+                settings_title: 'Settings', period_start_day: 'Period Start Day', save_settings: 'Save Settings',
+                edit_transaction: 'Edit Transaction', save_changes: 'Save Changes',
+                category_name: 'Category Name', icon: 'Icon', save: 'Save',
+                edit: 'Edit', delete: 'Delete',
+                save_failed: 'Failed to save', record_failed: 'Failed to record',
+                update_failed: 'Failed to update', confirm_delete_transaction: 'Delete this transaction?',
+                confirm_delete_category: 'Delete this category?', settings_saved: 'Settings saved',
+                period_ended: 'Period ended', all_period: 'All periods', yearly_view: 'Yearly view',
+                no_data: 'No data available', days_suffix: ' days',
+                select_icon: 'Select Icon', edit_category: 'Edit Category',
+                period_start_day_label: 'Budget Period Start Day', period_start_day_help: 'A new period begins on this day each month',
+                filter_by_period: 'Data Display Filter', filter_help: 'Select the period to display',
+                year_suffix: '', month_suffix: '', day_suffix: '',
+                currency_JPY: 'Japanese Yen', currency_USD: 'US Dollar', currency_EUR: 'Euro', currency_GBP: 'British Pound',
+                currency_CNY: 'Chinese Yuan', currency_KRW: 'Korean Won', currency_IDR: 'Indonesian Rupiah', currency_THB: 'Thai Baht',
+                currency_VND: 'Vietnamese Dong', currency_PHP: 'Philippine Peso', currency_MYR: 'Malaysian Ringgit', currency_SGD: 'Singapore Dollar',
+                currency_INR: 'Indian Rupee', currency_AUD: 'Australian Dollar', currency_CAD: 'Canadian Dollar', currency_CHF: 'Swiss Franc',
+                currency_NZD: 'New Zealand Dollar', currency_BRL: 'Brazilian Real', currency_MXN: 'Mexican Peso', currency_ZAR: 'South African Rand',
+                currency_AED: 'UAE Dirham', currency_SAR: 'Saudi Riyal', currency_TRY: 'Turkish Lira', currency_RUB: 'Russian Ruble',
+                currency_HKD: 'Hong Kong Dollar', currency_TWD: 'Taiwan Dollar',
+                cat_salary: 'Salary', cat_bonus: 'Bonus', cat_other_income: 'Other Income',
+                cat_food: 'Food', cat_transportation: 'Transportation', cat_housing: 'Housing',
+                cat_utilities: 'Utilities', cat_communication: 'Communication', cat_entertainment: 'Entertainment',
+                cat_medical: 'Medical', cat_other: 'Other'
+            },
+            'zh': {
+                nav_dashboard: '仪表板', nav_transactions: '交易历史', nav_analytics: '统计分析',
+                nav_categories: '类别编辑', nav_settings: '设置', title: '家庭账簿',
+                summary_title: '本月概要', year: '年', month: '月',
+                current_income: '本期收入', current_expense: '本期支出', current_balance: '本期收支',
+                previous_balance: '上期收支', period_info: '账簿期间信息',
+                current_period: '当前期间', previous_period: '上期期间', days_left: '剩余天数',
+                quick_record: '快速记录', type: '类型', income: '💰 收入', expense: '支出',
+                amount: '金额', category: '类别', memo: '备注', date: '日期', submit: '提交',
+                recent_transactions: '最近交易', no_transactions: '暂无交易',
+                all_transactions: '交易历史', analytics_title: '统计分析',
+                total_income: '总收入', total_expense: '总支出', net_balance: '净收支',
+                transaction_count: '交易数', category_breakdown: '按类别支出',
+                category_management: '类别编辑', income_categories: '收入类别',
+                expense_categories: '支出类别', add_category: '+ 添加类别',
+                settings_title: '设置', period_start_day: '期间开始日', save_settings: '保存设置',
+                edit_transaction: '编辑交易', save_changes: '保存更改',
+                category_name: '类别名称', icon: '图标', save: '保存',
+                edit: '编辑', delete: '删除',
+                save_failed: '保存失败', record_failed: '记录失败',
+                update_failed: '更新失败', confirm_delete_transaction: '删除此记录？',
+                confirm_delete_category: '删除此类别？', settings_saved: '设置已保存',
+                period_ended: '期间结束', all_period: '全期间', yearly_view: '年度视图',
+                no_data: '无数据', days_suffix: '天',
+                select_icon: '选择图标', edit_category: '编辑类别',
+                period_start_day_label: '家庭账簿期间开始日', period_start_day_help: '每月从这一天开始新期间',
+                filter_by_period: '数据显示筛选', filter_help: '选择要显示的期间',
+                year_suffix: '年', month_suffix: '月', day_suffix: '日',
+                currency_JPY: '日元', currency_USD: '美元', currency_EUR: '欧元', currency_GBP: '英镑',
+                currency_CNY: '人民币', currency_KRW: '韩元', currency_IDR: '印尼盾', currency_THB: '泰铢',
+                currency_VND: '越南盾', currency_PHP: '菲律宾比索', currency_MYR: '马来西亚林吉特', currency_SGD: '新加坡元',
+                currency_INR: '印度卢比', currency_AUD: '澳元', currency_CAD: '加元', currency_CHF: '瑞士法郎',
+                currency_NZD: '新西兰元', currency_BRL: '巴西雷亚尔', currency_MXN: '墨西哥比索', currency_ZAR: '南非兰特',
+                currency_AED: '阿联酋迪拉姆', currency_SAR: '沙特里亚尔', currency_TRY: '土耳其里拉', currency_RUB: '俄罗斯卢布',
+                currency_HKD: '港币', currency_TWD: '台币',
+                cat_salary: '工资', cat_bonus: '奖金', cat_other_income: '其他收入',
+                cat_food: '餐饮', cat_transportation: '交通', cat_housing: '住房',
+                cat_utilities: '水电煤', cat_communication: '通讯', cat_entertainment: '娱乐',
+                cat_medical: '医疗', cat_other: '其他'
+            },
+            'ko': {
+                nav_dashboard: '대시보드', nav_transactions: '거래 내역', nav_analytics: '통계·분석',
+                nav_categories: '카테고리 편집', nav_settings: '설정', title: '가계부',
+                summary_title: '이번 달 개요', year: '년', month: '월',
+                current_income: '이번 기간 수입', current_expense: '이번 기간 지출', current_balance: '이번 기간 수지',
+                previous_balance: '이전 기간 수지', period_info: '가계부 기간 정보',
+                current_period: '현재 기간', previous_period: '이전 기간', days_left: '남은 일수',
+                quick_record: '빠른 기록', type: '유형', income: '💰 수입', expense: '지출',
+                amount: '금액', category: '카테고리', memo: '메모', date: '날짜', submit: '기록하기',
+                recent_transactions: '최근 거래', no_transactions: '아직 거래가 없습니다',
+                all_transactions: '거래 내역', analytics_title: '통계·분석',
+                total_income: '총 수입', total_expense: '총 지출', net_balance: '순 수지',
+                transaction_count: '거래 수', category_breakdown: '카테고리별 지출',
+                category_management: '카테고리 편집', income_categories: '수입 카테고리',
+                expense_categories: '지출 카테고리', add_category: '+ 카테고리 추가',
+                settings_title: '설정', period_start_day: '기간 시작일', save_settings: '설정 저장',
+                edit_transaction: '거래 편집', save_changes: '변경사항 저장',
+                category_name: '카테고리 이름', icon: '아이콘', save: '저장',
+                edit: '편집', delete: '삭제',
+                save_failed: '저장 실패', record_failed: '기록 실패',
+                update_failed: '업데이트 실패', confirm_delete_transaction: '이 기록을 삭제하시겠습니까?',
+                confirm_delete_category: '이 카테고리를 삭제하시겠습니까?', settings_saved: '설정이 저장되었습니다',
+                period_ended: '기간 종료', all_period: '전체 기간', yearly_view: '연간 보기',
+                no_data: '데이터 없음', days_suffix: '일',
+                select_icon: '아이콘 선택', edit_category: '카테고리 편집',
+                period_start_day_label: '가계부 기간 시작일', period_start_day_help: '매월 이 날부터 새로운 기간이 시작됩니다',
+                filter_by_period: '데이터 표시 필터', filter_help: '표시할 기간을 선택하세요',
+                year_suffix: '년', month_suffix: '월', day_suffix: '일',
+                currency_JPY: '일본 엔', currency_USD: '미국 달러', currency_EUR: '유로', currency_GBP: '영국 파운드',
+                currency_CNY: '중국 위안', currency_KRW: '대한민국 원', currency_IDR: '인도네시아 루피아', currency_THB: '태국 바트',
+                currency_VND: '베트남 동', currency_PHP: '필리핀 페소', currency_MYR: '말레이시아 링깃', currency_SGD: '싱가포르 달러',
+                currency_INR: '인도 루피', currency_AUD: '호주 달러', currency_CAD: '캐나다 달러', currency_CHF: '스위스 프랑',
+                currency_NZD: '뉴질랜드 달러', currency_BRL: '브라질 레알', currency_MXN: '멕시코 페소', currency_ZAR: '남아프리카 랜드',
+                currency_AED: 'UAE 디르함', currency_SAR: '사우디 리얄', currency_TRY: '터키 리라', currency_RUB: '러시아 루블',
+                currency_HKD: '홍콩 달러', currency_TWD: '대만 달러',
+                cat_salary: '급여', cat_bonus: '보너스', cat_other_income: '기타 수입',
+                cat_food: '식비', cat_transportation: '교통비', cat_housing: '주거비',
+                cat_utilities: '공과금', cat_communication: '통신비', cat_entertainment: '오락비',
+                cat_medical: '의료비', cat_other: '기타'
+            },
+            'id': {
+                nav_dashboard: 'Dasbor', nav_transactions: 'Riwayat Transaksi', nav_analytics: 'Statistik·Analisis',
+                nav_categories: 'Editor Kategori', nav_settings: 'Pengaturan', title: 'Buku Kas',
+                summary_title: 'Ringkasan Bulan Ini', year: 'Tahun', month: 'Bulan',
+                current_income: 'Pendapatan Periode Ini', current_expense: 'Pengeluaran Periode Ini', current_balance: 'Saldo Periode Ini',
+                previous_balance: 'Saldo Periode Sebelumnya', period_info: 'Informasi Periode Buku Kas',
+                current_period: 'Periode Saat Ini', previous_period: 'Periode Sebelumnya', days_left: 'Hari Tersisa',
+                quick_record: 'Rekam Cepat', type: 'Jenis', income: '💰 Pendapatan', expense: 'Pengeluaran',
+                amount: 'Jumlah', category: 'Kategori', memo: 'Memo', date: 'Tanggal', submit: 'Kirim',
+                recent_transactions: 'Transaksi Terbaru', no_transactions: 'Belum ada transaksi',
+                all_transactions: 'Riwayat Transaksi', analytics_title: 'Statistik·Analisis',
+                total_income: 'Total Pendapatan', total_expense: 'Total Pengeluaran', net_balance: 'Saldo Bersih',
+                transaction_count: 'Jumlah Transaksi', category_breakdown: 'Pengeluaran per Kategori',
+                category_management: 'Editor Kategori', income_categories: 'Kategori Pendapatan',
+                expense_categories: 'Kategori Pengeluaran', add_category: '+ Tambah Kategori',
+                settings_title: 'Pengaturan', period_start_day: 'Hari Mulai Periode', save_settings: 'Simpan Pengaturan',
+                edit_transaction: 'Edit Transaksi', save_changes: 'Simpan Perubahan',
+                category_name: 'Nama Kategori', icon: 'Ikon', save: 'Simpan',
+                edit: 'Edit', delete: 'Hapus',
+                save_failed: 'Gagal menyimpan', record_failed: 'Gagal merekam',
+                update_failed: 'Gagal memperbarui', confirm_delete_transaction: 'Hapus catatan ini?',
+                confirm_delete_category: 'Hapus kategori ini?', settings_saved: 'Pengaturan tersimpan',
+                period_ended: 'Periode berakhir', all_period: 'Semua periode', yearly_view: 'Tampilan tahunan',
+                no_data: 'Tidak ada data', days_suffix: ' hari',
+                select_icon: 'Pilih Ikon', edit_category: 'Edit Kategori',
+                period_start_day_label: 'Hari Mulai Periode Buku Kas', period_start_day_help: 'Periode baru dimulai pada hari ini setiap bulan',
+                filter_by_period: 'Filter Tampilan Data', filter_help: 'Pilih periode yang akan ditampilkan',
+                year_suffix: '', month_suffix: '', day_suffix: '',
+                currency_JPY: 'Yen Jepang', currency_USD: 'Dolar AS', currency_EUR: 'Euro', currency_GBP: 'Pound Inggris',
+                currency_CNY: 'Yuan Tiongkok', currency_KRW: 'Won Korea', currency_IDR: 'Rupiah Indonesia', currency_THB: 'Baht Thailand',
+                currency_VND: 'Dong Vietnam', currency_PHP: 'Peso Filipina', currency_MYR: 'Ringgit Malaysia', currency_SGD: 'Dolar Singapura',
+                currency_INR: 'Rupee India', currency_AUD: 'Dolar Australia', currency_CAD: 'Dolar Kanada', currency_CHF: 'Franc Swiss',
+                currency_NZD: 'Dolar Selandia Baru', currency_BRL: 'Real Brasil', currency_MXN: 'Peso Meksiko', currency_ZAR: 'Rand Afrika Selatan',
+                currency_AED: 'Dirham UAE', currency_SAR: 'Riyal Saudi', currency_TRY: 'Lira Turki', currency_RUB: 'Rubel Rusia',
+                currency_HKD: 'Dolar Hong Kong', currency_TWD: 'Dolar Taiwan',
+                cat_salary: 'Gaji', cat_bonus: 'Bonus', cat_other_income: 'Pendapatan Lainnya',
+                cat_food: 'Makanan', cat_transportation: 'Transportasi', cat_housing: 'Perumahan',
+                cat_utilities: 'Utilitas', cat_communication: 'Komunikasi', cat_entertainment: 'Hiburan',
+                cat_medical: 'Medis', cat_other: 'Lainnya'
+            },
+            'th': {
+                nav_dashboard: 'แดชบอร์ด', nav_transactions: 'ประวัติธุรกรรม', nav_analytics: 'สถิติ·วิเคราะห์',
+                nav_categories: 'แก้ไขหมวดหมู่', nav_settings: 'ตั้งค่า', title: 'สมุดบัญชี',
+                summary_title: 'ภาพรวมเดือนนี้', year: 'ปี', month: 'เดือน',
+                current_income: 'รายได้งวดนี้', current_expense: 'รายจ่ายงวดนี้', current_balance: 'ยอดคงเหลืองวดนี้',
+                previous_balance: 'ยอดคงเหลืองวดก่อน', period_info: 'ข้อมูลงวดบัญชี',
+                current_period: 'งวดปัจจุบัน', previous_period: 'งวดก่อนหน้า', days_left: 'จำนวนวันที่เหลือ',
+                quick_record: 'บันทึกด่วน', type: 'ประเภท', income: '💰 รายได้', expense: 'รายจ่าย',
+                amount: 'จำนวนเงิน', category: 'หมวดหมู่', memo: 'บันทึกช่วยจำ', date: 'วันที่', submit: 'บันทึก',
+                recent_transactions: 'ธุรกรรมล่าสุด', no_transactions: 'ยังไม่มีธุรกรรม',
+                all_transactions: 'ประวัติธุรกรรม', analytics_title: 'สถิติ·วิเคราะห์',
+                total_income: 'รายได้รวม', total_expense: 'รายจ่ายรวม', net_balance: 'ยอดคงเหลือสุทธิ',
+                transaction_count: 'จำนวนธุรกรรม', category_breakdown: 'รายจ่ายตามหมวดหมู่',
+                category_management: 'แก้ไขหมวดหมู่', income_categories: 'หมวดหมู่รายได้',
+                expense_categories: 'หมวดหมู่รายจ่าย', add_category: '+ เพิ่มหมวดหมู่',
+                settings_title: 'ตั้งค่า', period_start_day: 'วันเริ่มต้นงวด', save_settings: 'บันทึกการตั้งค่า',
+                edit_transaction: 'แก้ไขธุรกรรม', save_changes: 'บันทึกการเปลี่ยนแปลง',
+                category_name: 'ชื่อหมวดหมู่', icon: 'ไอคอน', save: 'บันทึก',
+                edit: 'แก้ไข', delete: 'ลบ',
+                save_failed: 'บันทึกล้มเหลว', record_failed: 'บันทึกล้มเหลว',
+                update_failed: 'อัปเดตล้มเหลว', confirm_delete_transaction: 'ลบรายการนี้?',
+                confirm_delete_category: 'ลบหมวดหมู่นี้?', settings_saved: 'บันทึกการตั้งค่าแล้ว',
+                period_ended: 'งวดสิ้นสุด', all_period: 'ทุกงวด', yearly_view: 'มุมมองรายปี',
+                no_data: 'ไม่มีข้อมูล', days_suffix: ' วัน',
+                select_icon: 'เลือกไอคอน', edit_category: 'แก้ไขหมวดหมู่',
+                period_start_day_label: 'วันเริ่มต้นงวดบัญชี', period_start_day_help: 'งวดใหม่เริ่มต้นในวันนี้ของทุกเดือน',
+                filter_by_period: 'ตัวกรองการแสดงข้อมูล', filter_help: 'เลือกงวดที่จะแสดง',
+                year_suffix: '', month_suffix: '', day_suffix: '',
+                currency_JPY: 'เยนญี่ปุ่น', currency_USD: 'ดอลลาร์สหรัฐ', currency_EUR: 'ยูโร', currency_GBP: 'ปอนด์อังกฤษ',
+                currency_CNY: 'หยวนจีน', currency_KRW: 'วอนเกาหลี', currency_IDR: 'รูเปียห์อินโดนีเซีย', currency_THB: 'บาทไทย',
+                currency_VND: 'ดองเวียดนาม', currency_PHP: 'เปโซฟิลิปปินส์', currency_MYR: 'ริงกิตมาเลเซีย', currency_SGD: 'ดอลลาร์สิงคโปร์',
+                currency_INR: 'รูปีอินเดีย', currency_AUD: 'ดอลลาร์ออสเตรเลีย', currency_CAD: 'ดอลลาร์แคนาดา', currency_CHF: 'ฟรังก์สวิส',
+                currency_NZD: 'ดอลลาร์นิวซีแลนด์', currency_BRL: 'เรียลบราซิล', currency_MXN: 'เปโซเม็กซิโก', currency_ZAR: 'แรนด์แอฟริกาใต้',
+                currency_AED: 'เดอแฮมสหรัฐอาหรับเอมิเรตส์', currency_SAR: 'ริยาลซาอุดีอาระเบีย', currency_TRY: 'ลีราตุรกี', currency_RUB: 'รูเบิลรัสเซีย',
+                currency_HKD: 'ดอลลาร์ฮ่องกง', currency_TWD: 'ดอลลาร์ไต้หวัน',
+                cat_salary: 'เงินเดือน', cat_bonus: 'โบนัส', cat_other_income: 'รายได้อื่นๆ',
+                cat_food: 'ค่าอาหาร', cat_transportation: 'ค่าเดินทาง', cat_housing: 'ค่าที่อยู่อาศัย',
+                cat_utilities: 'ค่าสาธารณูปโภค', cat_communication: 'ค่าสื่อสาร', cat_entertainment: 'ค่าบันเทิง',
+                cat_medical: 'ค่าการแพทย์', cat_other: 'อื่นๆ'
+            },
+            'vi': {
+                nav_dashboard: 'Bảng điều khiển', nav_transactions: 'Lịch sử giao dịch', nav_analytics: 'Thống kê·Phân tích',
+                nav_categories: 'Chỉnh sửa danh mục', nav_settings: 'Cài đặt', title: 'Sổ chi tiêu',
+                summary_title: 'Tổng quan tháng này', year: 'Năm', month: 'Tháng',
+                current_income: 'Thu nhập kỳ này', current_expense: 'Chi tiêu kỳ này', current_balance: 'Số dư kỳ này',
+                previous_balance: 'Số dư kỳ trước', period_info: 'Thông tin kỳ sổ chi tiêu',
+                current_period: 'Kỳ hiện tại', previous_period: 'Kỳ trước', days_left: 'Số ngày còn lại',
+                quick_record: 'Ghi nhanh', type: 'Loại', income: '💰 Thu nhập', expense: 'Chi tiêu',
+                amount: 'Số tiền', category: 'Danh mục', memo: 'Ghi chú', date: 'Ngày', submit: 'Gửi',
+                recent_transactions: 'Giao dịch gần đây', no_transactions: 'Chưa có giao dịch',
+                all_transactions: 'Lịch sử giao dịch', analytics_title: 'Thống kê·Phân tích',
+                total_income: 'Tổng thu nhập', total_expense: 'Tổng chi tiêu', net_balance: 'Số dư ròng',
+                transaction_count: 'Số lượng giao dịch', category_breakdown: 'Chi tiêu theo danh mục',
+                category_management: 'Chỉnh sửa danh mục', income_categories: 'Danh mục thu nhập',
+                expense_categories: 'Danh mục chi tiêu', add_category: '+ Thêm danh mục',
+                settings_title: 'Cài đặt', period_start_day: 'Ngày bắt đầu kỳ', save_settings: 'Lưu cài đặt',
+                edit_transaction: 'Chỉnh sửa giao dịch', save_changes: 'Lưu thay đổi',
+                category_name: 'Tên danh mục', icon: 'Biểu tượng', save: 'Lưu',
+                edit: 'Chỉnh sửa', delete: 'Xóa',
+                save_failed: 'Lưu thất bại', record_failed: 'Ghi thất bại',
+                update_failed: 'Cập nhật thất bại', confirm_delete_transaction: 'Xóa bản ghi này?',
+                confirm_delete_category: 'Xóa danh mục này?', settings_saved: 'Cài đặt đã lưu',
+                period_ended: 'Kỳ kết thúc', all_period: 'Tất cả kỳ', yearly_view: 'Xem theo năm',
+                no_data: 'Không có dữ liệu', days_suffix: ' ngày',
+                select_icon: 'Chọn Biểu Tượng', edit_category: 'Chỉnh Sửa Danh Mục',
+                period_start_day_label: 'Ngày Bắt Đầu Kỳ Sổ Chi Tiêu', period_start_day_help: 'Kỳ mới bắt đầu vào ngày này mỗi tháng',
+                filter_by_period: 'Bộ Lọc Hiển Thị Dữ Liệu', filter_help: 'Chọn kỳ để hiển thị',
+                year_suffix: '', month_suffix: '', day_suffix: '',
+                currency_JPY: 'Yên Nhật', currency_USD: 'Đô la Mỹ', currency_EUR: 'Euro', currency_GBP: 'Bảng Anh',
+                currency_CNY: 'Nhân dân tệ', currency_KRW: 'Won Hàn Quốc', currency_IDR: 'Rupiah Indonesia', currency_THB: 'Baht Thái',
+                currency_VND: 'Đồng Việt Nam', currency_PHP: 'Peso Philippines', currency_MYR: 'Ringgit Malaysia', currency_SGD: 'Đô la Singapore',
+                currency_INR: 'Rupee Ấn Độ', currency_AUD: 'Đô la Úc', currency_CAD: 'Đô la Canada', currency_CHF: 'Franc Thụy Sĩ',
+                currency_NZD: 'Đô la New Zealand', currency_BRL: 'Real Brazil', currency_MXN: 'Peso Mexico', currency_ZAR: 'Rand Nam Phi',
+                currency_AED: 'Dirham UAE', currency_SAR: 'Riyal Saudi', currency_TRY: 'Lira Thổ Nhĩ Kỳ', currency_RUB: 'Rúp Nga',
+                currency_HKD: 'Đô la Hong Kong', currency_TWD: 'Đô la Đài Loan',
+                cat_salary: 'Lương', cat_bonus: 'Tiền thưởng', cat_other_income: 'Thu nhập khác',
+                cat_food: 'Chi phí ăn uống', cat_transportation: 'Chi phí đi lại', cat_housing: 'Chi phí nhà ở',
+                cat_utilities: 'Chi phí tiện ích', cat_communication: 'Chi phí liên lạc', cat_entertainment: 'Chi phí giải trí',
+                cat_medical: 'Chi phí y tế', cat_other: 'Khác'
+            },
+            'es': {
+                nav_dashboard: 'Panel', nav_transactions: 'Historial de transacciones', nav_analytics: 'Estadísticas·Análisis',
+                nav_categories: 'Editar categorías', nav_settings: 'Configuración', title: 'Libro de cuentas',
+                summary_title: 'Resumen del mes', year: 'Año', month: 'Mes',
+                current_income: 'Ingresos del período', current_expense: 'Gastos del período', current_balance: 'Balance del período',
+                previous_balance: 'Balance del período anterior', period_info: 'Información del período',
+                current_period: 'Período actual', previous_period: 'Período anterior', days_left: 'Días restantes',
+                quick_record: 'Registro rápido', type: 'Tipo', income: '💰 Ingresos', expense: 'Gastos',
+                amount: 'Monto', category: 'Categoría', memo: 'Nota', date: 'Fecha', submit: 'Enviar',
+                recent_transactions: 'Transacciones recientes', no_transactions: 'Aún no hay transacciones',
+                all_transactions: 'Historial de transacciones', analytics_title: 'Estadísticas·Análisis',
+                total_income: 'Ingresos totales', total_expense: 'Gastos totales', net_balance: 'Balance neto',
+                transaction_count: 'Número de transacciones', category_breakdown: 'Gastos por categoría',
+                category_management: 'Editor de categorías', income_categories: 'Categorías de ingresos',
+                expense_categories: 'Categorías de gastos', add_category: '+ Añadir categoría',
+                settings_title: 'Configuración', period_start_day: 'Día de inicio del período', save_settings: 'Guardar configuración',
+                edit_transaction: 'Editar transacción', save_changes: 'Guardar cambios',
+                category_name: 'Nombre de categoría', icon: 'Icono', save: 'Guardar',
+                edit: 'Editar', delete: 'Eliminar',
+                save_failed: 'Error al guardar', record_failed: 'Error al registrar',
+                update_failed: 'Error al actualizar', confirm_delete_transaction: '¿Eliminar este registro?',
+                confirm_delete_category: '¿Eliminar esta categoría?', settings_saved: 'Configuración guardada',
+                period_ended: 'Período terminado', all_period: 'Todos los períodos', yearly_view: 'Vista anual',
+                no_data: 'No hay datos', days_suffix: ' días',
+                select_icon: 'Seleccionar Icono', edit_category: 'Editar Categoría',
+                period_start_day_label: 'Día de Inicio del Período de Presupuesto', period_start_day_help: 'Un nuevo período comienza en este día cada mes',
+                filter_by_period: 'Filtro de Visualización de Datos', filter_help: 'Seleccione el período a mostrar',
+                year_suffix: '', month_suffix: '', day_suffix: '',
+                currency_JPY: 'Yen japonés', currency_USD: 'Dólar estadounidense', currency_EUR: 'Euro', currency_GBP: 'Libra esterlina',
+                currency_CNY: 'Yuan chino', currency_KRW: 'Won surcoreano', currency_IDR: 'Rupia indonesia', currency_THB: 'Baht tailandés',
+                currency_VND: 'Dong vietnamita', currency_PHP: 'Peso filipino', currency_MYR: 'Ringgit malayo', currency_SGD: 'Dólar de Singapur',
+                currency_INR: 'Rupia india', currency_AUD: 'Dólar australiano', currency_CAD: 'Dólar canadiense', currency_CHF: 'Franco suizo',
+                currency_NZD: 'Dólar neozelandés', currency_BRL: 'Real brasileño', currency_MXN: 'Peso mexicano', currency_ZAR: 'Rand sudafricano',
+                currency_AED: 'Dirham de EAU', currency_SAR: 'Riyal saudí', currency_TRY: 'Lira turca', currency_RUB: 'Rublo ruso',
+                currency_HKD: 'Dólar de Hong Kong', currency_TWD: 'Dólar taiwanés',
+                cat_salary: 'Salario', cat_bonus: 'Bonificación', cat_other_income: 'Otros ingresos',
+                cat_food: 'Alimentos', cat_transportation: 'Transporte', cat_housing: 'Vivienda',
+                cat_utilities: 'Servicios públicos', cat_communication: 'Comunicación', cat_entertainment: 'Entretenimiento',
+                cat_medical: 'Médico', cat_other: 'Otros'
+            },
+            'fr': {
+                nav_dashboard: 'Tableau de bord', nav_transactions: 'Historique des transactions', nav_analytics: 'Statistiques·Analyse',
+                nav_categories: 'Modifier les catégories', nav_settings: 'Paramètres', title: 'Livre de comptes',
+                summary_title: 'Résumé du mois', year: 'Année', month: 'Mois',
+                current_income: 'Revenus de la période', current_expense: 'Dépenses de la période', current_balance: 'Solde de la période',
+                previous_balance: 'Solde de la période précédente', period_info: 'Informations sur la période',
+                current_period: 'Période actuelle', previous_period: 'Période précédente', days_left: 'Jours restants',
+                quick_record: 'Enregistrement rapide', type: 'Type', income: '💰 Revenus', expense: 'Dépenses',
+                amount: 'Montant', category: 'Catégorie', memo: 'Note', date: 'Date', submit: 'Soumettre',
+                recent_transactions: 'Transactions récentes', no_transactions: 'Pas encore de transactions',
+                all_transactions: 'Historique des transactions', analytics_title: 'Statistiques·Analyse',
+                total_income: 'Revenus totaux', total_expense: 'Dépenses totales', net_balance: 'Solde net',
+                transaction_count: 'Nombre de transactions', category_breakdown: 'Dépenses par catégorie',
+                category_management: 'Éditeur de catégories', income_categories: 'Catégories de revenus',
+                expense_categories: 'Catégories de dépenses', add_category: '+ Ajouter une catégorie',
+                settings_title: 'Paramètres', period_start_day: 'Jour de début de période', save_settings: 'Enregistrer les paramètres',
+                edit_transaction: 'Modifier la transaction', save_changes: 'Enregistrer les modifications',
+                category_name: 'Nom de catégorie', icon: 'Icône', save: 'Enregistrer',
+                edit: 'Modifier', delete: 'Supprimer',
+                save_failed: 'Échec de l\'enregistrement', record_failed: 'Échec de l\'enregistrement',
+                update_failed: 'Échec de la mise à jour', confirm_delete_transaction: 'Supprimer cet enregistrement?',
+                confirm_delete_category: 'Supprimer cette catégorie?', settings_saved: 'Paramètres enregistrés',
+                period_ended: 'Période terminée', all_period: 'Toutes les périodes', yearly_view: 'Vue annuelle',
+                no_data: 'Aucune donnée', days_suffix: ' jours',
+                select_icon: 'Sélectionner l\'Icône', edit_category: 'Modifier la Catégorie',
+                period_start_day_label: 'Jour de Début de la Période Budgétaire', period_start_day_help: 'Une nouvelle période commence ce jour chaque mois',
+                filter_by_period: 'Filtre d\'Affichage des Données', filter_help: 'Sélectionnez la période à afficher',
+                year_suffix: '', month_suffix: '', day_suffix: '',
+                currency_JPY: 'Yen japonais', currency_USD: 'Dollar américain', currency_EUR: 'Euro', currency_GBP: 'Livre sterling',
+                currency_CNY: 'Yuan chinois', currency_KRW: 'Won sud-coréen', currency_IDR: 'Roupie indonésienne', currency_THB: 'Baht thaïlandais',
+                currency_VND: 'Dong vietnamien', currency_PHP: 'Peso philippin', currency_MYR: 'Ringgit malaisien', currency_SGD: 'Dollar de Singapour',
+                currency_INR: 'Roupie indienne', currency_AUD: 'Dollar australien', currency_CAD: 'Dollar canadien', currency_CHF: 'Franc suisse',
+                currency_NZD: 'Dollar néo-zélandais', currency_BRL: 'Real brésilien', currency_MXN: 'Peso mexicain', currency_ZAR: 'Rand sud-africain',
+                currency_AED: 'Dirham des EAU', currency_SAR: 'Riyal saoudien', currency_TRY: 'Livre turque', currency_RUB: 'Rouble russe',
+                currency_HKD: 'Dollar de Hong Kong', currency_TWD: 'Dollar de Taïwan',
+                cat_salary: 'Salaire', cat_bonus: 'Prime', cat_other_income: 'Autres revenus',
+                cat_food: 'Alimentation', cat_transportation: 'Transport', cat_housing: 'Logement',
+                cat_utilities: 'Services publics', cat_communication: 'Communication', cat_entertainment: 'Divertissement',
+                cat_medical: 'Médical', cat_other: 'Autres'
+            },
+            'de': {
+                nav_dashboard: 'Dashboard', nav_transactions: 'Transaktionsverlauf', nav_analytics: 'Statistik·Analyse',
+                nav_categories: 'Kategorien bearbeiten', nav_settings: 'Einstellungen', title: 'Haushaltsbuch',
+                summary_title: 'Monatsübersicht', year: 'Jahr', month: 'Monat',
+                current_income: 'Einnahmen der Periode', current_expense: 'Ausgaben der Periode', current_balance: 'Saldo der Periode',
+                previous_balance: 'Saldo der vorherigen Periode', period_info: 'Periodeninformationen',
+                current_period: 'Aktuelle Periode', previous_period: 'Vorherige Periode', days_left: 'Verbleibende Tage',
+                quick_record: 'Schnelleingabe', type: 'Typ', income: '💰 Einnahmen', expense: 'Ausgaben',
+                amount: 'Betrag', category: 'Kategorie', memo: 'Notiz', date: 'Datum', submit: 'Absenden',
+                recent_transactions: 'Letzte Transaktionen', no_transactions: 'Noch keine Transaktionen',
+                all_transactions: 'Transaktionsverlauf', analytics_title: 'Statistik·Analyse',
+                total_income: 'Gesamteinnahmen', total_expense: 'Gesamtausgaben', net_balance: 'Nettosaldo',
+                transaction_count: 'Anzahl der Transaktionen', category_breakdown: 'Ausgaben nach Kategorie',
+                category_management: 'Kategorien-Editor', income_categories: 'Einnahmenkategorien',
+                expense_categories: 'Ausgabenkategorien', add_category: '+ Kategorie hinzufügen',
+                settings_title: 'Einstellungen', period_start_day: 'Periodenstartag', save_settings: 'Einstellungen speichern',
+                edit_transaction: 'Transaktion bearbeiten', save_changes: 'Änderungen speichern',
+                category_name: 'Kategoriename', icon: 'Symbol', save: 'Speichern',
+                edit: 'Bearbeiten', delete: 'Löschen',
+                save_failed: 'Speichern fehlgeschlagen', record_failed: 'Aufzeichnung fehlgeschlagen',
+                update_failed: 'Aktualisierung fehlgeschlagen', confirm_delete_transaction: 'Diesen Eintrag löschen?',
+                confirm_delete_category: 'Diese Kategorie löschen?', settings_saved: 'Einstellungen gespeichert',
+                period_ended: 'Periode beendet', all_period: 'Alle Perioden', yearly_view: 'Jahresansicht',
+                no_data: 'Keine Daten', days_suffix: ' Tage',
+                select_icon: 'Symbol Auswählen', edit_category: 'Kategorie Bearbeiten',
+                period_start_day_label: 'Startag der Budgetperiode', period_start_day_help: 'Eine neue Periode beginnt an diesem Tag jeden Monat',
+                filter_by_period: 'Datenanzeigefilter', filter_help: 'Wählen Sie die anzuzeigende Periode',
+                year_suffix: '', month_suffix: '', day_suffix: '',
+                currency_JPY: 'Japanischer Yen', currency_USD: 'US-Dollar', currency_EUR: 'Euro', currency_GBP: 'Britisches Pfund',
+                currency_CNY: 'Chinesischer Yuan', currency_KRW: 'Südkoreanischer Won', currency_IDR: 'Indonesische Rupiah', currency_THB: 'Thailändischer Baht',
+                currency_VND: 'Vietnamesischer Dong', currency_PHP: 'Philippinischer Peso', currency_MYR: 'Malaysischer Ringgit', currency_SGD: 'Singapur-Dollar',
+                currency_INR: 'Indische Rupie', currency_AUD: 'Australischer Dollar', currency_CAD: 'Kanadischer Dollar', currency_CHF: 'Schweizer Franken',
+                currency_NZD: 'Neuseeland-Dollar', currency_BRL: 'Brasilianischer Real', currency_MXN: 'Mexikanischer Peso', currency_ZAR: 'Südafrikanischer Rand',
+                currency_AED: 'VAE-Dirham', currency_SAR: 'Saudi-Riyal', currency_TRY: 'Türkische Lira', currency_RUB: 'Russischer Rubel',
+                currency_HKD: 'Hongkong-Dollar', currency_TWD: 'Taiwan-Dollar',
+                cat_salary: 'Gehalt', cat_bonus: 'Bonus', cat_other_income: 'Sonstige Einkünfte',
+                cat_food: 'Lebensmittel', cat_transportation: 'Transport', cat_housing: 'Wohnen',
+                cat_utilities: 'Versorgungsleistungen', cat_communication: 'Kommunikation', cat_entertainment: 'Unterhaltung',
+                cat_medical: 'Medizinisch', cat_other: 'Sonstiges'
+            },
+            'pt': {
+                nav_dashboard: 'Painel', nav_transactions: 'Histórico de transações', nav_analytics: 'Estatísticas·Análise',
+                nav_categories: 'Editar categorias', nav_settings: 'Configurações', title: 'Livro de contas',
+                summary_title: 'Resumo do mês', year: 'Ano', month: 'Mês',
+                current_income: 'Receita do período', current_expense: 'Despesa do período', current_balance: 'Saldo do período',
+                previous_balance: 'Saldo do período anterior', period_info: 'Informações do período',
+                current_period: 'Período atual', previous_period: 'Período anterior', days_left: 'Dias restantes',
+                quick_record: 'Registro rápido', type: 'Tipo', income: '💰 Receita', expense: 'Despesa',
+                amount: 'Valor', category: 'Categoria', memo: 'Nota', date: 'Data', submit: 'Enviar',
+                recent_transactions: 'Transações recentes', no_transactions: 'Ainda não há transações',
+                all_transactions: 'Histórico de transações', analytics_title: 'Estatísticas·Análise',
+                total_income: 'Receita total', total_expense: 'Despesa total', net_balance: 'Saldo líquido',
+                transaction_count: 'Número de transações', category_breakdown: 'Despesa por categoria',
+                category_management: 'Editor de categorias', income_categories: 'Categorias de receita',
+                expense_categories: 'Categorias de despesa', add_category: '+ Adicionar categoria',
+                settings_title: 'Configurações', period_start_day: 'Dia de início do período', save_settings: 'Salvar configurações',
+                edit_transaction: 'Editar transação', save_changes: 'Salvar alterações',
+                category_name: 'Nome da categoria', icon: 'Ícone', save: 'Salvar',
+                edit: 'Editar', delete: 'Excluir',
+                save_failed: 'Falha ao salvar', record_failed: 'Falha ao registrar',
+                update_failed: 'Falha ao atualizar', confirm_delete_transaction: 'Excluir este registro?',
+                confirm_delete_category: 'Excluir esta categoria?', settings_saved: 'Configurações salvas',
+                period_ended: 'Período encerrado', all_period: 'Todos os períodos', yearly_view: 'Visualização anual',
+                no_data: 'Sem dados', days_suffix: ' dias',
+                select_icon: 'Selecionar Ícone', edit_category: 'Editar Categoria',
+                period_start_day_label: 'Dia de Início do Período Orçamentário', period_start_day_help: 'Um novo período começa neste dia todo mês',
+                filter_by_period: 'Filtro de Exibição de Dados', filter_help: 'Selecione o período a ser exibido',
+                year_suffix: '', month_suffix: '', day_suffix: '',
+                currency_JPY: 'Iene japonês', currency_USD: 'Dólar americano', currency_EUR: 'Euro', currency_GBP: 'Libra esterlina',
+                currency_CNY: 'Yuan chinês', currency_KRW: 'Won sul-coreano', currency_IDR: 'Rupia indonésia', currency_THB: 'Baht tailandês',
+                currency_VND: 'Dong vietnamita', currency_PHP: 'Peso filipino', currency_MYR: 'Ringgit malaio', currency_SGD: 'Dólar de Cingapura',
+                currency_INR: 'Rupia indiana', currency_AUD: 'Dólar australiano', currency_CAD: 'Dólar canadense', currency_CHF: 'Franco suíço',
+                currency_NZD: 'Dólar neozelandês', currency_BRL: 'Real brasileiro', currency_MXN: 'Peso mexicano', currency_ZAR: 'Rand sul-africano',
+                currency_AED: 'Dirham dos EAU', currency_SAR: 'Riyal saudita', currency_TRY: 'Lira turca', currency_RUB: 'Rublo russo',
+                currency_HKD: 'Dólar de Hong Kong', currency_TWD: 'Dólar taiwanês',
+                cat_salary: 'Salário', cat_bonus: 'Bônus', cat_other_income: 'Outras receitas',
+                cat_food: 'Alimentação', cat_transportation: 'Transporte', cat_housing: 'Habitação',
+                cat_utilities: 'Serviços públicos', cat_communication: 'Comunicação', cat_entertainment: 'Entretenimento',
+                cat_medical: 'Médico', cat_other: 'Outros'
+            },
+            'ar': {
+                nav_dashboard: 'لوحة التحكم', nav_transactions: 'سجل المعاملات', nav_analytics: 'الإحصائيات·التحليل',
+                nav_categories: 'تحرير الفئات', nav_settings: 'الإعدادات', title: 'دفتر الحسابات',
+                summary_title: 'ملخص الشهر', year: 'السنة', month: 'الشهر',
+                current_income: 'دخل الفترة', current_expense: 'مصروفات الفترة', current_balance: 'رصيد الفترة',
+                previous_balance: 'رصيد الفترة السابقة', period_info: 'معلومات الفترة',
+                current_period: 'الفترة الحالية', previous_period: 'الفترة السابقة', days_left: 'الأيام المتبقية',
+                quick_record: 'تسجيل سريع', type: 'النوع', income: '💰 دخل', expense: 'مصروفات',
+                amount: 'المبلغ', category: 'الفئة', memo: 'ملاحظة', date: 'التاريخ', submit: 'إرسال',
+                recent_transactions: 'المعاملات الأخيرة', no_transactions: 'لا توجد معاملات بعد',
+                all_transactions: 'سجل المعاملات', analytics_title: 'الإحصائيات·التحليل',
+                total_income: 'إجمالي الدخل', total_expense: 'إجمالي المصروفات', net_balance: 'الرصيد الصافي',
+                transaction_count: 'عدد المعاملات', category_breakdown: 'المصروفات حسب الفئة',
+                category_management: 'محرر الفئات', income_categories: 'فئات الدخل',
+                expense_categories: 'فئات المصروفات', add_category: '+ إضافة فئة',
+                settings_title: 'الإعدادات', period_start_day: 'يوم بداية الفترة', save_settings: 'حفظ الإعدادات',
+                edit_transaction: 'تحرير المعاملة', save_changes: 'حفظ التغييرات',
+                category_name: 'اسم الفئة', icon: 'الأيقونة', save: 'حفظ',
+                edit: 'تحرير', delete: 'حذف',
+                save_failed: 'فشل الحفظ', record_failed: 'فشل التسجيل',
+                update_failed: 'فشل التحديث', confirm_delete_transaction: 'حذف هذا السجل؟',
+                confirm_delete_category: 'حذف هذه الفئة؟', settings_saved: 'تم حفظ الإعدادات',
+                period_ended: 'انتهت الفترة', all_period: 'جميع الفترات', yearly_view: 'عرض سنوي',
+                no_data: 'لا توجد بيانات', days_suffix: ' يوم',
+                select_icon: 'اختر الأيقونة', edit_category: 'تحرير الفئة',
+                period_start_day_label: 'يوم بداية فترة الميزانية', period_start_day_help: 'تبدأ فترة جديدة في هذا اليوم من كل شهر',
+                filter_by_period: 'تصفية عرض البيانات', filter_help: 'اختر الفترة المراد عرضها',
+                year_suffix: '', month_suffix: '', day_suffix: '',
+                currency_JPY: 'الين الياباني', currency_USD: 'الدولار الأمريكي', currency_EUR: 'اليورو', currency_GBP: 'الجنيه الإسترليني',
+                currency_CNY: 'اليوان الصيني', currency_KRW: 'الوون الكوري', currency_IDR: 'الروبية الإندونيسية', currency_THB: 'البات التايلاندي',
+                currency_VND: 'الدونج الفيتنامي', currency_PHP: 'البيزو الفلبيني', currency_MYR: 'الرينغيت الماليزي', currency_SGD: 'دولار سنغافورة',
+                currency_INR: 'الروبية الهندية', currency_AUD: 'الدولار الأسترالي', currency_CAD: 'الدولار الكندي', currency_CHF: 'الفرنك السويسري',
+                currency_NZD: 'دولار نيوزيلندا', currency_BRL: 'الريال البرازيلي', currency_MXN: 'البيزو المكسيكي', currency_ZAR: 'الراند الجنوب أفريقي',
+                currency_AED: 'الدرهم الإماراتي', currency_SAR: 'الريال السعودي', currency_TRY: 'الليرة التركية', currency_RUB: 'الروبل الروسي',
+                currency_HKD: 'دولار هونغ كونغ', currency_TWD: 'دولار تايوان',
+                cat_salary: 'الراتب', cat_bonus: 'المكافأة', cat_other_income: 'دخل آخر',
+                cat_food: 'الطعام', cat_transportation: 'المواصلات', cat_housing: 'السكن',
+                cat_utilities: 'المرافق', cat_communication: 'الاتصالات', cat_entertainment: 'الترفيه',
+                cat_medical: 'الطبي', cat_other: 'أخرى'
+            }
+        };
+
+        let currentCurrency = 'JPY';
+        let currentLanguage = 'ja';
+        let settings = { period_start_day: '1' };
+
+        function initCurrencySelect() {
+            const select = document.getElementById('currencySelect');
+            select.innerHTML = '';
+            Object.keys(CURRENCIES).forEach(code => {
+                const option = document.createElement('option');
+                option.value = code;
+                const currencyKey = `currency_${code}`;
+                const currencyName = TRANSLATIONS[currentLanguage]?.[currencyKey] || CURRENCIES[code].name;
+                option.textContent = `${CURRENCIES[code].symbol} ${currencyName} (${code})`;
+                select.appendChild(option);
+            });
+        }
+
+        function initLanguageSelect() {
+            const select = document.getElementById('langSelect');
+            select.innerHTML = '';
+            Object.keys(LANGUAGES).forEach(code => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = LANGUAGES[code];
+                select.appendChild(option);
+            });
+        }
+
+        function translatePage() {
+            const translations = TRANSLATIONS[currentLanguage] || TRANSLATIONS['ja'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = translations[key];
+                    } else {
+                        el.textContent = translations[key];
+                    }
+                }
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function escapeQuotes(text) {
+            return String(text).replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        function translateCategoryName(name) {
+            if (name && name.startsWith('cat_')) {
+                return TRANSLATIONS[currentLanguage]?.[name] || name;
+            }
+            return name;
+        }
+
+        function formatCurrency(amount) {
+            const symbol = CURRENCIES[currentCurrency]?.symbol || '¥';
+            return symbol + amount.toLocaleString();
+        }
+
+        function updateCurrencyUnits() {
+            const symbol = CURRENCIES[currentCurrency]?.symbol || '¥';
+            document.querySelectorAll('.currency-unit').forEach(el => {
+                el.textContent = symbol;
+            });
+            const amountInput = document.getElementById('amount');
+            if (amountInput) {
+                amountInput.placeholder = `${symbol}100000`;
+            }
+        }
+
+        function formatDate(date) {
+            const y = date.getFullYear();
+            const m = (date.getMonth() + 1);
+            const d = date.getDate();
+            return `${y}年${m}月${d}日`;
+        }
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
+            const pageMap = {
+                'dashboard': 'dashboardPage',
+                'transactions': 'transactionsPage',
+                'analytics': 'analyticsPage',
+                'categories': 'categoriesPage',
+                'settings': 'settingsPage'
+            };
+            
+            document.getElementById(pageMap[pageName]).classList.add('active');
+            document.querySelector(`[onclick="showPage('${pageName}')"]`)?.classList.add('active');
+            
+            if (pageName === 'transactions') {
+                loadAllTransactions();
+            } else if (pageName === 'analytics') {
+                loadAnalytics();
+            } else if (pageName === 'categories') {
+                loadCategories();
+            } else if (pageName === 'dashboard') {
+                loadData();
+            }
+        }
+
+        function getDaysInMonth(year, month) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function updatePeriodInfo() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
+            const startDay = parseInt(settings.period_start_day || 1);
+            
+            if (year && month) {
+                const selectedYear = parseInt(year);
+                const selectedMonth = parseInt(month);
+                
+                const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
+                const actualStartDay = Math.min(startDay, daysInMonth);
+                
+                const startDate = new Date(selectedYear, selectedMonth - 1, actualStartDay);
+                
+                const nextMonth = selectedMonth === 12 ? 1 : selectedMonth + 1;
+                const nextYear = selectedMonth === 12 ? selectedYear + 1 : selectedYear;
+                const daysInNextMonth = getDaysInMonth(nextYear, nextMonth);
+                const actualEndDay = Math.min(startDay, daysInNextMonth) - 1;
+                
+                let endDate;
+                if (actualEndDay > 0) {
+                    endDate = new Date(nextYear, nextMonth - 1, actualEndDay);
+                } else {
+                    endDate = new Date(nextYear, nextMonth - 1, getDaysInMonth(nextYear, nextMonth - 1));
+                }
+                
+                const fullPeriod = `${formatDate(startDate)} 〜 ${formatDate(endDate)}`;
+                
+                document.getElementById('currentPeriod').textContent = fullPeriod;
+                document.getElementById('currentPeriod2').textContent = fullPeriod;
+                document.getElementById('currentPeriod3').textContent = fullPeriod;
+                document.getElementById('infoCurrent').textContent = fullPeriod;
+                
+                const prevMonth = selectedMonth === 1 ? 12 : selectedMonth - 1;
+                const prevYear = selectedMonth === 1 ? selectedYear - 1 : selectedYear;
+                const daysInPrevMonth = getDaysInMonth(prevYear, prevMonth);
+                const prevActualStartDay = Math.min(startDay, daysInPrevMonth);
+                
+                const prevStartDate = new Date(prevYear, prevMonth - 1, prevActualStartDay);
+                
+                const prevNextMonth = prevMonth === 12 ? 1 : prevMonth + 1;
+                const prevNextYear = prevMonth === 12 ? prevYear + 1 : prevYear;
+                const daysInPrevNextMonth = getDaysInMonth(prevNextYear, prevNextMonth);
+                const prevActualEndDay = Math.min(startDay, daysInPrevNextMonth) - 1;
+                
+                let prevEndDate;
+                if (prevActualEndDay > 0) {
+                    prevEndDate = new Date(prevNextYear, prevNextMonth - 1, prevActualEndDay);
+                } else {
+                    prevEndDate = new Date(prevNextYear, prevNextMonth - 1, getDaysInMonth(prevNextYear, prevNextMonth - 1));
+                }
+                
+                const prevPeriod = `${formatDate(prevStartDate)} 〜 ${formatDate(prevEndDate)}`;
+                document.getElementById('previousPeriod').textContent = prevPeriod;
+                document.getElementById('infoPrevious').textContent = prevPeriod;
+                
+                const today = new Date();
+                const daysLeft = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+                document.getElementById('daysLeft').textContent = daysLeft > 0 ? `${daysLeft}${TRANSLATIONS[currentLanguage].days_suffix}` : TRANSLATIONS[currentLanguage].period_ended;
+            } else if (year) {
+                const selectedYear = parseInt(year);
+                const daysInJan = getDaysInMonth(selectedYear, 1);
+                const actualStartDay = Math.min(startDay, daysInJan);
+                
+                const startDate = new Date(selectedYear, 0, actualStartDay);
+                
+                const daysInDec = getDaysInMonth(selectedYear, 12);
+                const actualEndDay = Math.min(startDay, daysInDec) - 1;
+                
+                let endDate;
+                if (actualEndDay > 0) {
+                    endDate = new Date(selectedYear + 1, 0, actualEndDay);
+                } else {
+                    endDate = new Date(selectedYear, 11, 31);
+                }
+                
+                const fullPeriod = `${formatDate(startDate)} 〜 ${formatDate(endDate)}`;
+                document.getElementById('currentPeriod').textContent = fullPeriod;
+                document.getElementById('currentPeriod2').textContent = fullPeriod;
+                document.getElementById('currentPeriod3').textContent = fullPeriod;
+                document.getElementById('infoCurrent').textContent = fullPeriod;
+                
+                const prevStartDate = new Date(selectedYear - 1, 0, actualStartDay);
+                const prevEndDate = new Date(selectedYear, 0, actualEndDay > 0 ? actualEndDay : 31);
+                
+                const prevPeriod = `${formatDate(prevStartDate)} 〜 ${formatDate(prevEndDate)}`;
+                document.getElementById('previousPeriod').textContent = prevPeriod;
+                document.getElementById('infoPrevious').textContent = prevPeriod;
+                document.getElementById('daysLeft').textContent = TRANSLATIONS[currentLanguage].yearly_view;
+            } else {
+                document.getElementById('currentPeriod').textContent = TRANSLATIONS[currentLanguage].all_period;
+                document.getElementById('currentPeriod2').textContent = TRANSLATIONS[currentLanguage].all_period;
+                document.getElementById('currentPeriod3').textContent = TRANSLATIONS[currentLanguage].all_period;
+                document.getElementById('infoCurrent').textContent = TRANSLATIONS[currentLanguage].all_period;
+                document.getElementById('previousPeriod').textContent = '-';
+                document.getElementById('infoPrevious').textContent = '-';
+                document.getElementById('daysLeft').textContent = '-';
+            }
+        }
+
+        function initYearSelector() {
+            const yearSelect = document.getElementById('yearSelect');
+            const currentYear = new Date().getFullYear();
+            const yearSuffix = TRANSLATIONS[currentLanguage]?.year_suffix || '';
+            
+            yearSelect.innerHTML = `<option value="">${TRANSLATIONS[currentLanguage].all_period}</option>`;
+            for (let year = currentYear; year >= currentYear - 5; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year + yearSuffix;
+                yearSelect.appendChild(option);
+            }
+            
+            yearSelect.value = currentYear;
+            const currentMonth = new Date().getMonth() + 1;
+            document.getElementById('monthSelect').value = currentMonth;
+        }
+
+        function initMonthSelector() {
+            const monthSelect = document.getElementById('monthSelect');
+            const monthSuffix = TRANSLATIONS[currentLanguage]?.month_suffix || '';
+            monthSelect.innerHTML = `<option value="">${TRANSLATIONS[currentLanguage].all_period}</option>`;
+            for (let i = 1; i <= 12; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i + monthSuffix;
+                monthSelect.appendChild(option);
+            }
+        }
+
+        function initPeriodStartDaySelector() {
+            const select = document.getElementById('periodStartDay');
+            const daySuffix = TRANSLATIONS[currentLanguage]?.day_suffix || '';
+            select.innerHTML = '';
+            for (let i = 1; i <= 31; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i + daySuffix;
+                select.appendChild(option);
+            }
+        }
+
+        document.getElementById('currencySelect').addEventListener('change', async (e) => {
+            currentCurrency = e.target.value;
+            updateCurrencyUnits();
+            loadData();
+            await fetch(`${API_BASE}/settings`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ currency: currentCurrency })
+            });
+        });
+
+        document.getElementById('langSelect').addEventListener('change', async (e) => {
+            currentLanguage = e.target.value;
+            translatePage();
+            initYearSelector();
+            initMonthSelector();
+            initCurrencySelect();
+            initPeriodStartDaySelector();
+            
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                if (activePage.id === 'dashboardPage') {
+                    loadData();
+                } else if (activePage.id === 'transactionsPage') {
+                    loadAllTransactions();
+                } else if (activePage.id === 'categoriesPage') {
+                    loadCategories();
+                } else if (activePage.id === 'analyticsPage') {
+                    loadAnalytics();
+                }
+            }
+            
+            await fetch(`${API_BASE}/settings`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ language: currentLanguage })
+            });
+        });
+
+        document.getElementById('yearSelect').addEventListener('change', loadData);
+        document.getElementById('monthSelect').addEventListener('change', loadData);
+
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_BASE}/categories`);
+                const categories = await response.json();
+                
+                const incomeList = document.getElementById('incomeCategoriesList');
+                const expenseList = document.getElementById('expenseCategoriesList');
+                
+                const incomeCategories = categories.filter(c => c.type === 'income');
+                const expenseCategories = categories.filter(c => c.type === 'expense');
+                
+                incomeList.innerHTML = incomeCategories.map(c => `
+                    <div class="category-item">
+                        <div><span class="category-icon">${escapeHtml(c.icon || '📦')}</span><span class="category-name">${escapeHtml(translateCategoryName(c.name))}</span></div>
+                        <div class="transaction-actions">
+                            <button class="btn-edit" onclick="editCategory(${c.id}, '${escapeQuotes(c.name)}', '${escapeQuotes(c.icon)}', '${escapeQuotes(c.type)}')">${TRANSLATIONS[currentLanguage]?.edit || '編集'}</button>
+                            <button class="btn-delete" onclick="deleteCategory(${c.id})">${TRANSLATIONS[currentLanguage]?.delete || '削除'}</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                expenseList.innerHTML = expenseCategories.map(c => `
+                    <div class="category-item">
+                        <div><span class="category-icon">${escapeHtml(c.icon || '📦')}</span><span class="category-name">${escapeHtml(translateCategoryName(c.name))}</span></div>
+                        <div class="transaction-actions">
+                            <button class="btn-edit" onclick="editCategory(${c.id}, '${escapeQuotes(c.name)}', '${escapeQuotes(c.icon)}', '${escapeQuotes(c.type)}')">${TRANSLATIONS[currentLanguage]?.edit || '編集'}</button>
+                            <button class="btn-delete" onclick="deleteCategory(${c.id})">${TRANSLATIONS[currentLanguage]?.delete || '削除'}</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        async function loadCategoryOptions(selectId, type) {
+            try {
+                const response = await fetch(`${API_BASE}/categories?type=${type}`);
+                const categories = await response.json();
+                
+                const select = document.getElementById(selectId);
+                select.innerHTML = categories.map(c => 
+                    `<option value="${c.name}">${c.icon || '📦'} ${translateCategoryName(c.name)}</option>`
+                ).join('');
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        document.getElementById('type').addEventListener('change', (e) => {
+            loadCategoryOptions('category', e.target.value);
+        });
+
+        document.getElementById('editType').addEventListener('change', (e) => {
+            loadCategoryOptions('editCategory', e.target.value);
+        });
+
+        async function loadSettings() {
+            try {
+                const response = await fetch(`${API_BASE}/settings`);
+                settings = await response.json();
+                
+                currentCurrency = settings.currency || 'JPY';
+                currentLanguage = settings.language || 'ja';
+                
+                document.getElementById('currencySelect').value = currentCurrency;
+                document.getElementById('langSelect').value = currentLanguage;
+                document.getElementById('periodStartDay').value = settings.period_start_day || '1';
+                
+                updateCurrencyUnits();
+                translatePage();
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        async function loadData() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
+            
+            updatePeriodInfo();
+            
+            let url = `${API_BASE}/transactions`;
+            let summaryUrl = `${API_BASE}/summary`;
+            
+            const params = new URLSearchParams();
+            if (year) params.append('year', year);
+            if (month) params.append('month', month);
+            
+            if (params.toString()) {
+                url += '?' + params.toString();
+                summaryUrl += '?' + params.toString();
+            }
+
+            try {
+                const [transactionsRes, summaryRes] = await Promise.all([
+                    fetch(url),
+                    fetch(summaryUrl)
+                ]);
+
+                const transactions = await transactionsRes.json();
+                const summary = await summaryRes.json();
+
+                document.getElementById('currentIncome').textContent = formatCurrency(summary.income);
+                document.getElementById('currentExpense').textContent = formatCurrency(summary.expense);
+                document.getElementById('currentBalance').textContent = formatCurrency(summary.balance);
+                document.getElementById('transactionCount').textContent = transactions.length;
+
+                const listEl = document.getElementById('transactionList');
+                if (transactions.length === 0) {
+                    listEl.innerHTML = `<div class="empty-state">${TRANSLATIONS[currentLanguage]?.no_transactions || 'まだ取引がありません'}</div>`;
+                } else {
+                    listEl.innerHTML = transactions.slice(0, 10).map(t => `
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-category">${escapeHtml(translateCategoryName(t.category))}</div>
+                                <div class="transaction-date">${escapeHtml(t.date)}${t.description ? ' - ' + escapeHtml(t.description) : ''}</div>
+                            </div>
+                            <div class="transaction-amount ${t.type}">
+                                ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
+                            </div>
+                            <div class="transaction-actions">
+                                <button class="btn-edit" onclick="openEditModal(${t.id}, '${escapeQuotes(t.date)}', '${escapeQuotes(t.type)}', '${escapeQuotes(t.category)}', ${t.amount}, '${escapeQuotes(t.description || '')}')">${TRANSLATIONS[currentLanguage]?.edit || '編集'}</button>
+                                <button class="btn-delete" onclick="deleteTransaction(${t.id})">${TRANSLATIONS[currentLanguage]?.delete || '削除'}</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        async function loadAllTransactions() {
+            try {
+                const response = await fetch(`${API_BASE}/transactions`);
+                const transactions = await response.json();
+
+                const listEl = document.getElementById('allTransactionsList');
+                if (transactions.length === 0) {
+                    listEl.innerHTML = `<div class="empty-state">${TRANSLATIONS[currentLanguage]?.no_transactions || 'まだ取引がありません'}</div>`;
+                } else {
+                    listEl.innerHTML = transactions.map(t => `
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-category">${escapeHtml(translateCategoryName(t.category))}</div>
+                                <div class="transaction-date">${escapeHtml(t.date)}${t.description ? ' - ' + escapeHtml(t.description) : ''}</div>
+                            </div>
+                            <div class="transaction-amount ${t.type}">
+                                ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
+                            </div>
+                            <div class="transaction-actions">
+                                <button class="btn-edit" onclick="openEditModal(${t.id}, '${escapeQuotes(t.date)}', '${escapeQuotes(t.type)}', '${escapeQuotes(t.category)}', ${t.amount}, '${escapeQuotes(t.description || '')}')">${TRANSLATIONS[currentLanguage]?.edit || '編集'}</button>
+                                <button class="btn-delete" onclick="deleteTransaction(${t.id})">${TRANSLATIONS[currentLanguage]?.delete || '削除'}</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+            }
+        }
+
+        async function loadAnalytics() {
+            try {
+                const [transactionsRes, summaryRes] = await Promise.all([
+                    fetch(`${API_BASE}/transactions`),
+                    fetch(`${API_BASE}/summary`)
+                ]);
+
+                const transactions = await transactionsRes.json();
+                const summary = await summaryRes.json();
+
+                document.getElementById('statsIncome').textContent = formatCurrency(summary.income);
+                document.getElementById('statsExpense').textContent = formatCurrency(summary.expense);
+                document.getElementById('statsBalance').textContent = formatCurrency(summary.balance);
+                document.getElementById('statsCount').textContent = transactions.length;
+
+                const breakdownEl = document.getElementById('categoryBreakdown');
+                if (summary.categories.length === 0) {
+                    breakdownEl.innerHTML = `<div class="empty-state">${TRANSLATIONS[currentLanguage].no_data}</div>`;
+                } else {
+                    breakdownEl.innerHTML = summary.categories.map(c => `
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-category">${translateCategoryName(c.category)}</div>
+                            </div>
+                            <div class="transaction-amount expense">
+                                ${formatCurrency(c.total)}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+            }
+        }
+
+        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                date: document.getElementById('date').value,
+                type: document.getElementById('type').value,
+                category: document.getElementById('category').value,
+                amount: document.getElementById('amount').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/transactions`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    e.target.reset();
+                    document.getElementById('date').valueAsDate = new Date();
+                    await loadCategoryOptions('category', document.getElementById('type').value);
+                    loadData();
+                } else {
+                    alert(TRANSLATIONS[currentLanguage].record_failed);
+                }
+            } catch (error) {
+                console.error('Error adding transaction:', error);
+                alert(TRANSLATIONS[currentLanguage].record_failed);
+            }
+        });
+
+        function openEditModal(id, date, type, category, amount, description) {
+            document.getElementById('editId').value = id;
+            document.getElementById('editDate').value = date;
+            document.getElementById('editType').value = type;
+            document.getElementById('editAmount').value = amount;
+            document.getElementById('editDescription').value = description;
+            
+            loadCategoryOptions('editCategory', type).then(() => {
+                document.getElementById('editCategory').value = category;
+            });
+            
+            document.getElementById('editTransactionModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editTransactionModal').classList.remove('active');
+        }
+
+        document.getElementById('editTransactionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('editId').value;
+            const data = {
+                date: document.getElementById('editDate').value,
+                type: document.getElementById('editType').value,
+                category: document.getElementById('editCategory').value,
+                amount: document.getElementById('editAmount').value,
+                description: document.getElementById('editDescription').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/transactions/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    closeEditModal();
+                    loadData();
+                    loadAllTransactions();
+                } else {
+                    alert(TRANSLATIONS[currentLanguage].update_failed);
+                }
+            } catch (error) {
+                console.error('Error updating transaction:', error);
+                alert(TRANSLATIONS[currentLanguage].update_failed);
+            }
+        });
+
+        async function deleteTransaction(id) {
+            if (!confirm(TRANSLATIONS[currentLanguage].confirm_delete_transaction)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/transactions/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadData();
+                    loadAllTransactions();
+                }
+            } catch (error) {
+                console.error('Error deleting transaction:', error);
+            }
+        }
+
+        function openCategoryModal(type, id = null, name = '', icon = '') {
+            document.getElementById('categoryId').value = id || '';
+            document.getElementById('categoryType').value = type;
+            document.getElementById('categoryName').value = name;
+            const selectedIcon = icon || '📦';
+            document.getElementById('categoryIcon').value = selectedIcon;
+            document.getElementById('selectedIconDisplay').textContent = selectedIcon;
+            document.getElementById('categoryModalTitle').textContent = id ? 
+                (TRANSLATIONS[currentLanguage]?.edit_category || 'カテゴリを編集') : 
+                (TRANSLATIONS[currentLanguage]?.add_category || 'カテゴリ追加');
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function openIconPicker() {
+            const grid = document.getElementById('iconPickerGrid');
+            const currentIcon = document.getElementById('categoryIcon').value;
+            
+            grid.innerHTML = ICON_LIST.map(icon => `
+                <div class="icon-option ${icon === currentIcon ? 'selected' : ''}" 
+                     onclick="selectIcon('${icon}')">${icon}</div>
+            `).join('');
+            
+            document.getElementById('iconPickerModal').classList.add('active');
+        }
+
+        function closeIconPicker() {
+            document.getElementById('iconPickerModal').classList.remove('active');
+        }
+
+        function selectIcon(icon) {
+            document.getElementById('categoryIcon').value = icon;
+            document.getElementById('selectedIconDisplay').textContent = icon;
+            closeIconPicker();
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+        }
+
+        function editCategory(id, name, icon, type) {
+            openCategoryModal(type, id, name, icon);
+        }
+
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('categoryId').value;
+            const data = {
+                name: document.getElementById('categoryName').value,
+                icon: document.getElementById('categoryIcon').value || '📦',
+                type: document.getElementById('categoryType').value
+            };
+
+            try {
+                const url = id ? `${API_BASE}/categories/${id}` : `${API_BASE}/categories`;
+                const method = id ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    closeCategoryModal();
+                    loadCategories();
+                    loadCategoryOptions('category', document.getElementById('type').value);
+                } else {
+                    const error = await response.json();
+                    alert(error.error || TRANSLATIONS[currentLanguage].save_failed);
+                }
+            } catch (error) {
+                console.error('Error saving category:', error);
+                alert(TRANSLATIONS[currentLanguage].save_failed);
+            }
+        });
+
+        async function deleteCategory(id) {
+            if (!confirm(TRANSLATIONS[currentLanguage].confirm_delete_category)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/categories/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadCategories();
+                    loadCategoryOptions('category', document.getElementById('type').value);
+                }
+            } catch (error) {
+                console.error('Error deleting category:', error);
+            }
+        }
+
+        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                period_start_day: document.getElementById('periodStartDay').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/settings`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    settings.period_start_day = data.period_start_day;
+                    alert(TRANSLATIONS[currentLanguage].settings_saved);
+                    updatePeriodInfo();
+                    loadData();
+                } else {
+                    alert(TRANSLATIONS[currentLanguage].save_failed);
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                alert(TRANSLATIONS[currentLanguage].save_failed);
+            }
+        });
+
+        document.getElementById('date').valueAsDate = new Date();
+        
+        initCurrencySelect();
+        initLanguageSelect();
+        initYearSelector();
+        initMonthSelector();
+        initPeriodStartDaySelector();
+        loadSettings().then(() => {
+            loadCategoryOptions('category', 'expense');
+            loadCategoryOptions('editCategory', 'expense');
+            loadData();
+        });
+    </script>
+</body>
+</html>
